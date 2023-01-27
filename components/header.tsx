@@ -26,6 +26,9 @@ const Header = () => {
           <Link href="/" className="hover:underline">
             Blog
           </Link>
+          <Link href="/" className="hover:underline">
+            Projects
+          </Link>
         </div>
       </h2>
     </Container>
