@@ -42,6 +42,7 @@ const Footer = () => {
           <div className="flex flex-col lg:flex-row justify-center items-center lg:pl-4">
             {SOCIALS.map(social => (
               <a
+                key={social.name}
                 href={social.profileUrl}
                 target="_blank"
                 className="mx-3 flex items-center gap-2 text-black hover:bg-gray-100 font-semibold py-3 px-12 lg:px-8 duration-200 transition-colors mb-6 lg:mb-0"
