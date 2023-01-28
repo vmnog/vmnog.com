@@ -18,9 +18,7 @@ export default function Post({ post, morePosts }: Props) {
       <Container>
           <article className="mb-32">
             <Head>
-              <title>
-                {post.title} | vmnog
-              </title>
+              {/* <title>{post.title} | vmnog</title> */}
               <meta property="og:image" content={post.ogImage.url} />
             </Head>
             <PostHeader

@@ -17,10 +17,10 @@ export default function Index({ allPosts }: Props) {
   const morePosts = allPosts.slice(1)
   return (
     <>
+      <Head>
+        {/* <title>{`${AUTHOR_NAME} (${AUTHOR_NICK}) | Frontend Developer`}</title> */}
+      </Head>
       <Layout>
-        <Head>
-          <title>{`${AUTHOR_NAME} (${AUTHOR_NICK}) | Frontend Developer`}</title>
-        </Head>
         <Container>
           <Intro />
           {heroPost && (

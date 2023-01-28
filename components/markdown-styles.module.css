@@ -16,3 +16,11 @@
 .markdown h3 {
   @apply text-2xl mt-8 mb-4 leading-snug;
 }
+
+.markdown pre {
+  @apply bg-slate-800 text-gray-100 p-4 select-all ;
+}
+
+.markdown *::selection {
+  @apply text-slate-900;
+}
