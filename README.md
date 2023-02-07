@@ -47,7 +47,7 @@ Feel free to contribute to this project by opening an issue or submitting a pull
 
 - [Next.js](https://nextjs.org/)
 - [TailwindCSS](https://tailwindcss.com/)
-- [Blog Starter](https://github.com/timlrx/tailwind-nextjs-starter-blog)
+- [Blog Starter](https://github.com/vercel/next.js/tree/canary/examples/blog-starter)
 
 ## License
 
