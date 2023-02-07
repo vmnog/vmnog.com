@@ -13,27 +13,16 @@ type Props = {
 }
 
 export default function Index({ allPosts }: Props) {
-  const heroPost = allPosts[0]
-  const morePosts = allPosts.slice(1)
+  const lastPosts = allPosts.slice(0, allPosts.length - 1);
   return (
     <>
       <Head>
-        {/* <title>{`${AUTHOR_NAME} (${AUTHOR_NICK}) | Frontend Developer`}</title> */}
+        <title>{`${AUTHOR_NAME} (${AUTHOR_NICK}) | Frontend Developer`}</title> 
       </Head>
       <Layout>
         <Container>
           <Intro />
-          {heroPost && (
-            <HeroPost
-              title={heroPost.title}
-              coverImage={heroPost.coverImage}
-              date={heroPost.date}
-              author={heroPost.author}
-              slug={heroPost.slug}
-              excerpt={heroPost.excerpt}
-            />
-          )}
-          {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+          {lastPosts.length > 0 && <MoreStories posts={lastPosts} />}
         </Container>
       </Layout>
     </>
