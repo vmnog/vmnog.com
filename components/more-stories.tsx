@@ -13,8 +13,8 @@ const MoreStories = ({ posts }: Props) => {
 			opacity: 1,
 			scale: 1,
 			transition: {
-				delayChildren: 1.8,
-				staggerChildren: 0.6
+				delayChildren: 0.8,
+				staggerChildren: 0.2
 			}
 		}
 	};
@@ -30,7 +30,7 @@ const MoreStories = ({ posts }: Props) => {
   return (
     <section>
       <motion.h2
-				transition={{ duration: 0.5, delay: 1.5 }}
+				transition={{ duration: 0.5, delay: 0.6 }}
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				className="mb-8 text-5xl md:text-7xl font-bold tracking-tighter leading-tight"

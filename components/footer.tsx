@@ -35,7 +35,7 @@ const SOCIALS: SocialMedia[] = [
 const Footer = () => {
   return (
     <motion.footer
-			transition={{ duration: 0.5, delay: 2.5 }}
+			transition={{ duration: 0.5, delay: 1.2 }}
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			className="bg-neutral-50 border-t border-neutral-200"
