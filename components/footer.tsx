@@ -37,7 +37,7 @@ const Footer = () => {
       <Container>
         <div className="py-28 flex flex-col lg:flex-row items-center justify-between">
           <h3 className="text-xl font-bold tracking-tighter leading-tight text-center lg:text-left mb-10 lg:mb-0 lg:pr-4">
-            <span className='font-semibold'>By </span> {AUTHOR_NAME}
+            <span className="text-lg font-normal">By</span> {AUTHOR_NAME}
           </h3>
           <div className="flex flex-col lg:flex-row justify-center items-center lg:pl-4">
             {SOCIALS.map(social => (
