@@ -21,12 +21,15 @@ const TABS: Tab[] = [
   { name: 'Projects', path: '/projects' },
 ]
 
+type Props = {
+	shouldAnimateOnStart: boolean;
+}
 
-const Header = () => {
+const Header = ({ shouldAnimateOnStart }: Props) => {
   return (
 		<motion.header
 			transition={{ duration: 0.5 }}
-			initial={{ opacity: 0 }}
+			initial={{ opacity: shouldAnimateOnStart ? 0 : 1 }}
 			animate={{ opacity: 1 }}
 		>
 			<Container>
