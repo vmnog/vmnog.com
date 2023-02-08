@@ -8,7 +8,7 @@ type Props = {
 }
 
 const Layout = ({ children }: Props) => {
-	 const router = useRouter();
+  const router = useRouter();
 
   return (
     <>

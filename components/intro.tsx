@@ -41,7 +41,7 @@ const Intro = () => {
 				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
 				incididunt ut labore et dolore magna <u>aliqua</u>. Praesent elementum facilisis
 				leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet
-				nulla facilities morbi <u>tempus</u>.
+				nulla facilities morbi <u>tempus</u> 🇧🇷.
       </motion.p>
     </motion.section>
   )

@@ -11,6 +11,8 @@ import {
 import { Menu as MenuIcon} from 'react-feather'
 import {white} from 'tailwindcss/colors'
 import {motion} from 'framer-motion'
+import {useCallback} from 'react'
+import {useRouter} from 'next/router'
 
 type Tab = { name: string; path: string; };
 
@@ -25,6 +27,14 @@ type Props = {
 }
 
 const Header = ({ shouldAnimateOnStart }: Props) => {
+	const router = useRouter();
+
+	const reloadPage = useCallback(() => {
+		if(router.pathname === '/') {
+			location.reload();
+		}
+	}, [router]);
+
   return (
 		<motion.header
 			transition={{ duration: 0.5 }}
@@ -34,7 +44,7 @@ const Header = ({ shouldAnimateOnStart }: Props) => {
 			<Container>
 				<h2 className="text-2xl md:text-4xl font-bold tracking-tight md:tracking-tighter leading-tight mb-20 mt-8 grid grid-cols-1 md:grid-cols-header">
 						<div className="w-full flex justify-between items-center">
-							<Link href="/" className="text-4xl font-bold tracking-tighter leading-tight hover:underline">
+							<Link onClick={reloadPage} href="/" className="text-4xl font-bold tracking-tighter leading-tight hover:underline">
 								{AUTHOR_NICK}.
 							</Link>
 

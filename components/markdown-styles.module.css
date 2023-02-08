@@ -18,7 +18,7 @@
 }
 
 .markdown pre {
-  @apply bg-slate-800 text-gray-100 p-4 select-all ;
+  @apply rounded-lg transition-all hover:shadow-blue-400/50 shadow-sm bg-gradient-to-r from-code-gradient-1 via-code-gradient-2 to-code-gradient-3 text-white p-4 select-all ;
 }
 
 .markdown *::selection {
