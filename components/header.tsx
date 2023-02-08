@@ -15,7 +15,6 @@ import {motion} from 'framer-motion'
 type Tab = { name: string; path: string; };
 
 const TABS: Tab[] = [
-  { name: 'Home', path: '/' },
   { name: 'About me', path: '/about' },
   { name: 'Blog', path: '/blog' },
   { name: 'Projects', path: '/projects' },
