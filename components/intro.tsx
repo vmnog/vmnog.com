@@ -22,7 +22,7 @@ const Intro = () => {
 			className="flex-col flex md:justify-between mt-16 mb-24 gap-4"
 		>
 			<motion.h1
-				className="w-fit text-8xl font-bold tracking-tighter leading-tight lowercase cursor-pointer select-none"
+				className="w-fit text-7xl md:text-8xl font-bold tracking-tighter leading-[3rem] h-28 md:h-16 lowercase cursor-pointer select-none"
 				onClick={() => setShowName(!showName)}
 				animate={controls}
 			>
