@@ -11,15 +11,15 @@ import {
 import { Menu as MenuIcon} from 'react-feather'
 import {white} from 'tailwindcss/colors'
 import {motion} from 'framer-motion'
-import {useCallback} from 'react'
+import {useCallback } from 'react'
 import {useRouter} from 'next/router'
+import classNames from 'classnames'
 
-type Tab = { name: string; path: string; };
+type Tab = { name: string; path: string; isActive: boolean };
 
 const TABS: Tab[] = [
-  { name: 'About me', path: '/about' },
-  { name: 'Blog', path: '/blog' },
-  { name: 'Projects', path: '/projects' },
+  { name: 'About', path: '/about', isActive: false },
+  { name: 'Blog', path: '/blog', isActive: false },
 ]
 
 type Props = {
@@ -33,6 +33,10 @@ const Header = ({ shouldAnimateOnStart }: Props) => {
 		if(router.pathname === '/') {
 			location.reload();
 		}
+	}, [router]);
+
+	const isActiveRoute = useCallback((route: Tab) => {
+		return router.pathname === route.path;
 	}, [router]);
 
   return (
@@ -54,10 +58,12 @@ const Header = ({ shouldAnimateOnStart }: Props) => {
 										<MenuIcon />
 									</MenuButton>
 									<MenuList>
-										{TABS.map(tab => (
-												<Link key={tab.name} href={tab.path} className="hover:underline font-normal">
-													<MenuItem className="text-red-500">
-															{tab.name}
+										{TABS.map((tab) => (
+												<Link key={tab.name} href={tab.path} className={
+														classNames("hover:underline", { "underline": isActiveRoute(tab) })
+												}>
+													<MenuItem>
+															<span className="lowercase font-normal">{tab.name}</span>
 													</MenuItem>
 												</Link>
 										))}
@@ -66,9 +72,11 @@ const Header = ({ shouldAnimateOnStart }: Props) => {
 							</nav>
 						</div>
 
-					<div className="justify-end gap-6 text-2xl flex-wrap hidden md:flex">
-						{TABS.map(tab => (
-							<Link key={tab.name} href={tab.path} className="hover:underline">
+					<div className="justify-end gap-6 text-2xl flex-wrap hidden md:flex lowercase">
+						{TABS.map((tab) => (
+							<Link key={tab.name} href={tab.path} className={
+														classNames("hover:underline font-normal", { "underline": isActiveRoute(tab) })
+												}>
 								{tab.name}
 							</Link>
 						))}

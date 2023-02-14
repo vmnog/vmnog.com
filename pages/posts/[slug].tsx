@@ -9,16 +9,15 @@ import type PostType from '../../interfaces/post'
 
 type Props = {
   post: PostType
-  morePosts: PostType[]
 }
 
-export default function Post({ post, morePosts }: Props) {
+export default function Post({ post }: Props) {
   return (
     <Layout>
       <Container>
           <article className="mb-32">
             <Head>
-              {/* <title>{post.title} | vmnog</title> */}
+              <title>{post.title} | vmnog</title> 
               <meta property="og:image" content={post.ogImage.url} />
             </Head>
             <PostHeader

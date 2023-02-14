@@ -1,6 +1,8 @@
-import {useCallback, useEffect, useState} from "react"
+import {useCallback, useState} from "react"
 import { AUTHOR_NAME, AUTHOR_NICK } from "../lib/constants"
 import { motion, useAnimationControls } from "framer-motion"
+import Link from "next/link";
+import {AtSign, Calendar, Clock, MapPin} from 'react-feather';
 
 const Intro = () => {
 	const [showName, setShowName] = useState(true);
@@ -15,9 +17,6 @@ const Intro = () => {
 			transition: { duration: 0.5 },
 		});
 	}, [showName, setShowName]);
-
-	useEffect(() => {
-	}, [showName])
 
   return (
     <motion.section
@@ -37,11 +36,15 @@ const Intro = () => {
 				transition={{ duration: 0.5, delay: 0.4 }}
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
-				className="text-lg md:text-2xl leading-relaxed mb-4 max-w-4xl">
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-				incididunt ut labore et dolore magna <u>aliqua</u>. Praesent elementum facilisis
-				leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet
-				nulla facilities morbi <u>tempus</u> 🇧🇷.
+				className="text-lg md:text-2xl leading-relaxed mb-4 mt-4 max-w-4xl"
+				>
+					<span title="Currently working at Brasilprev as Senior Software Engineer" className="flex flex-wrap items-center gap-1"><Calendar /> Sr. Frontend Engineer <a target="_blank" className="hover:opacity-80 font-semibold ml-6 md:ml-0" href="https://www1.brasilprev.com.br">@brasilprev</a> <span>🇧🇷</span></span><br />
+					Skilled in <a target="_blank" className="hover:opacity-80 font-bold" href="https://reactjs.org/">React</a>
+					&nbsp;&&nbsp;<a target="_blank" className="hover:opacity-80 font-bold" href="https://angular.io/">Angular</a>. 
+					Not just coding, but writing <Link className="hover:opacity-80 font-semibold" href="/blog">tech articles</Link> to share knowledge. Takes big challenges head-on, driven to elevate
+					projects to new heights. Currently founder and maintainer of the project&nbsp;
+					<a target="_blank" className="hover:opacity-80 font-bold" href="https://vendeutudo.com.br/">@vendeutudo</a>.&nbsp;
+					<Link href="/about" className="text-blue-500 hover:opacity-80">read more</Link>
       </motion.p>
     </motion.section>
   )

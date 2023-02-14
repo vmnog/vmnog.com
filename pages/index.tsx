@@ -6,6 +6,7 @@ import { getAllPosts } from '../lib/api'
 import Head from 'next/head'
 import { AUTHOR_NICK, AUTHOR_NAME } from '../lib/constants'
 import Post from '../interfaces/post'
+import SectionSeparator from '../components/section-separator'
 
 type Props = {
   allPosts: Post[]
@@ -21,6 +22,7 @@ export default function Index({ allPosts }: Props) {
       <Layout>
         <Container>
           <Intro />
+					<SectionSeparator />
           {lastPosts.length > 0 && <MoreStories posts={lastPosts} />}
         </Container>
       </Layout>

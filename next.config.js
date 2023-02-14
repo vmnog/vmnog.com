@@ -6,7 +6,7 @@ module.exports = {
         hostname: 'github.com',
         port: '',
         pathname: '/**',
-      },
+      }
     ],
   },
 }
