@@ -35,7 +35,7 @@ const MoreStories = ({ posts }: Props) => {
 				animate={{ opacity: 1 }}
 				className="mb-8 text-5xl md:text-7xl font-bold tracking-tighter leading-tight"
 			>
-        Last articles
+        Last posts
       </motion.h2>
       <motion.div 
 				variants={container}

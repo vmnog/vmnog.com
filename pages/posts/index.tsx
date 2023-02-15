@@ -1,11 +1,11 @@
-import Layout from '../components/layout'
-import { getAllPosts } from '../lib/api'
+import Layout from '../../components/layout'
+import { getAllPosts } from '../../lib/api'
 import {motion} from 'framer-motion'
-import Container from '../components/container'
-import Post from '../interfaces/post'
-import PostPreview from '../components/post-preview'
-import {AUTHOR_NAME} from '../lib/constants'
-import {AUTHOR_NICK} from '../lib/constants'
+import Container from '../../components/container'
+import Post from '../../interfaces/post'
+import PostPreview from '../../components/post-preview'
+import {AUTHOR_NAME} from '../../lib/constants'
+import {AUTHOR_NICK} from '../../lib/constants'
 import Head from 'next/head'
 
 type Props = {

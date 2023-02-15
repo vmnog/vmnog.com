@@ -41,7 +41,7 @@ const Intro = () => {
 					<span title="Currently working at Brasilprev as Senior Software Engineer" className="flex flex-wrap items-center gap-1"><Calendar /> Sr. Frontend Engineer <a target="_blank" className="hover:opacity-80 font-semibold ml-6 md:ml-0" href="https://www1.brasilprev.com.br">@brasilprev</a> <span>🇧🇷</span></span><br />
 					Skilled in <a target="_blank" className="hover:opacity-80 font-bold" href="https://reactjs.org/">React</a>
 					&nbsp;&&nbsp;<a target="_blank" className="hover:opacity-80 font-bold" href="https://angular.io/">Angular</a>. 
-					Not just coding, but writing <Link className="hover:opacity-80 font-semibold" href="/blog">tech articles</Link> to share knowledge. Takes big challenges head-on, driven to elevate
+					Not just coding, but writing <Link className="hover:opacity-80 font-semibold" href="/posts">tech articles</Link> to share knowledge. Takes big challenges head-on, driven to elevate
 					projects to new heights. Currently founder and maintainer of the project&nbsp;
 					<a target="_blank" className="hover:opacity-80 font-bold" href="https://vendeutudo.com.br/">@vendeutudo</a>.&nbsp;
 					<Link href="/about" className="text-blue-500 hover:opacity-80">read more</Link>

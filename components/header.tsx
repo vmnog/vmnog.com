@@ -19,7 +19,7 @@ type Tab = { name: string; path: string; isActive: boolean };
 
 const TABS: Tab[] = [
   { name: 'About', path: '/about', isActive: false },
-  { name: 'Blog', path: '/blog', isActive: false },
+  { name: 'Blog', path: '/posts', isActive: false },
 ]
 
 type Props = {

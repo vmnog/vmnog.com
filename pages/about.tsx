@@ -38,7 +38,7 @@ export default function AboutPage() {
 						<section className="md:mt-20 h-fit grid gap-2 leading-loose">
 							<p>I started my journey in the field of software development in 2017 and currently serve as a Senior Frontend Developer at <a target="_blank" className="hover:opacity-80 font-semibold" href="https://www1.brasilprev.com.br">@brasilprev</a> <span>🇧🇷</span>.  Throughout my professional experience, I have had the privilege of working at also others well-established financial institutions such as <a target="_blank" className="hover:opacity-80 font-semibold" href="https://www.bullla.com.br/">@bulla</a> and <a target="_blank" className="hover:opacity-80 font-semibold" href="https://www.wexinc.com/">@wex</a>.</p>
 							<p>I am particularly passionate about my side project <a target="_blank" className="hover:opacity-80 font-semibold" href="https://vendeutudo.com.br">Vendeu Tudo</a>, which allows me to explore and implement innovative solutions to real-world problems.</p>
-							<p>In my spare time, I enjoy sharing my experiences and knowledge by writing technical articles about the challenges I face in my daily work. Feel free to check them out <Link className="hover:opacity-80 font-semibold" href="/blog">here</Link>.</p>
+							<p>In my spare time, I enjoy sharing my experiences and knowledge by writing technical articles about the challenges I face in my daily work. Feel free to check them out <Link className="hover:opacity-80 font-semibold" href="/posts">here</Link>.</p>
 						</section>
 					</motion.div>
 

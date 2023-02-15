@@ -1,5 +1,5 @@
 .markdown {
-  @apply text-lg leading-relaxed;
+  @apply text-lg leading-[2rem];
 }
 
 .markdown p,
@@ -7,6 +7,14 @@
 .markdown ol,
 .markdown blockquote {
   @apply my-6;
+}
+
+.markdown ul {
+	@apply pl-6 list-disc;
+}
+
+.markdown h1 {
+  @apply text-5xl mt-12 mb-4 leading-snug font-bold;
 }
 
 .markdown h2 {
@@ -18,9 +26,25 @@
 }
 
 .markdown pre {
-  @apply text-white p-4 select-all overflow-auto rounded-lg transition-all hover:shadow-blue-400/50 shadow-sm bg-gradient-to-r from-code-gradient-1 via-code-gradient-2 to-code-gradient-3;
+  @apply leading-normal cursor-pointer text-sm text-white p-4 select-all overflow-auto rounded-lg transition-all shadow-sm bg-gradient-to-r from-code-gradient-1/90 via-code-gradient-2/90 to-code-gradient-3/90;
 }
+
+.markdown pre code {
+	@apply bg-transparent;
+}
+
+.markdown code {
+  @apply cursor-pointer text-sm text-white p-1 select-all overflow-auto rounded-lg transition-all bg-black/50;
+}
+
+.markdown blockquote {
+	@apply bg-yellow-50 py-3 px-8 rounded-lg;
+};
 
 .markdown *::selection {
   @apply text-slate-900;
+}
+
+.markdown a {
+	@apply text-blue-500;
 }
