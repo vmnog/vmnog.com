@@ -25,11 +25,11 @@ To start, let's explore the key aspects to consider when creating unit tests for
 
 ## Initial Setup
 
-The first step I make is to make sure my test is setup correctly, let's consider we have a file called `custom.component.ts` it means we should have a another related test file called `custom.component.spec.ts`.  After creating the file we should make share that the test is running perfectly. If you use the [Angular CLI](https://angular.io/cli/generate) to generate your components you probrably already have a setup using the default settings such as `TestBed.configureTestingModule`, `TestBed.createComponent` and a `describe` with a `it('should create')`. Once we have our test ready and running we can start with our next step: _Analizing what should be tested_.
+The first step I make is to make sure my test is setup correctly, let's consider we have a file called `custom.component.ts` it means we should have another related test file called `custom.component.spec.ts`.  After creating the file we should make share that the test is running perfectly. If you use the [Angular CLI](https://angular.io/cli/generate) to generate your components you probably already have a setup using the default settings such as `TestBed.configureTestingModule`, `TestBed.createComponent` and a `describe` with a `it('should create')`. Once we have our test ready and running we can start with our next step: _Analyzing what should be tested_.
 
 ## What should be tested?
 
-Typically, in frontend applications, there exist intricate connections between various components such as logic, interfaces, user interactions, validations, navigation, and API calls. If we adhere to the principle that unit tests should examine every component in isolation, it implies that we should test each line of code in HTML, Typescript, and CSS. Nonetheless, this approach would lead to a difficult and arduous development and maintenance process due to the complexity and effort required to modify each individual piece of code whenever updates are made. The approach I like to use when developing frontend unit test is to always first look at the interface (HTML).
+Typically, in frontend applications, there exists intricate connections between various components such as logic, interfaces, user interactions, validations, navigation, and API calls. If we adhere to the principle that unit tests should examine every component in isolation, it implies that we should test each line of code in HTML, Typescript, and CSS. Nonetheless, this approach would lead to a difficult and arduous development and maintenance process due to the complexity and effort required to modify each individual piece of code whenever updates are made. The approach I like to use when developing frontend unit test is to always first look at the interface (HTML).
 
 ### Testing logic behaviors
 
@@ -64,7 +64,7 @@ As mentioned earlier, our priority is to test the interface behavior first. Ther
 
 ### Testing interface behaviors
 
-Let's assume that this component has a different behavior when the button is clicked, resulting in a UI change.
+Let's assume that this component has different behavior when the button is clicked, resulting in a UI change.
 
 ```typescript
 import { Component, Input, Output, EventEmitter } from '@angular/core';
@@ -94,7 +94,7 @@ Given the changes in the button behavior, our test cases should now include the 
 
 ### Testing CSS styling behaviors
 
-Assuming this component has a different behavior when the button is clicked, resulting in a CSS change, our test cases should include the following conditions:
+Assuming this component has different behavior when the button is clicked, resulting in a CSS change, our test cases should include the following conditions:
 
 - The `<button>` tag is displayed in the component. _(same)_
 - The `label` property is properly displayed inside the `<button>` tag. _(same)_
@@ -120,4 +120,4 @@ export class ButtonComponent {
 >💡 It's important to note that we are testing CSS behavior in this case, which means we are validating the styling of our component. While testing, we should ensure that the button changes its background color to red upon being clicked.
 
 ## Conclusion
-To sum up, unit testing is crucial to modern software development. For frontend applications, we can test intricate connections between various components such as logic, interfaces, user interactions, validations, navigation, and API calls. However, our focus should be on testing the interface behavior first, then logic and CSS. We should ensure that the test cases we are using are minimal, easy to maintain, and have a high return on investment. By doing so, we can verify the correctness of our code, catch defects early, and prevent regressions.
+To sum up, unit testing is crucial to modern software development. For frontend applications, we can test intricate connections between various components such as logic, interfaces, user interactions, validations, navigation, and API calls. However, our focus should be on testing the interface behavior first, then logic and then CSS. We should ensure that the test cases we are using are minimal, easy to maintain, and have a high return on investment. By doing so, we can verify the correctness of our code, catch defects early, and prevent regressions.
