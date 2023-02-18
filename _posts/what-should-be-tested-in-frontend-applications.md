@@ -10,13 +10,6 @@ ogImage:
   url: '/assets/blog/what-should-be-tested-in-frontend-applications/cover.jpg'
 ---
 
-### Summary
- - [Initial Setup](#initial-setup)
- - [What should be tested?](#what-should-be-tested)
- - [Testing logic behaviors](#testing-logic-behaviors)
- - [Testing interface behaviors](#testing-interface-behaviors)
- - [Testing CSS styling behaviors](#testing-css-styling-behaviors)
-
 <hr/>
 
 Unit testing is a critical component of modern software development. It allows developers to verify the correctness of their code, catch defects early, and prevent regressions. Angular, a popular front-end framework, provides a robust testing framework that allows developers to write unit tests for their code. In this article, we will explore how to set up Angular unit tests as a senior developer.
