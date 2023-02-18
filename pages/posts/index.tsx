@@ -54,21 +54,23 @@ export default function BlogPage({ posts }: Props) {
 								variants={container}
 								initial="hidden"
 								animate="visible"
-								className="grid grid-cols-1 md:gap-x-16 lg:gap-x-32 gap-y-20 md:gap-y-32 mb-32"
+								className="grid"
 							>
 								{posts.map((post) => (
-									<motion.div variants={item}>
-										<PostPreview
-											hideCoverImage
-											key={post.slug}
-											title={post.title}
-											coverImage={post.coverImage}
-											date={post.date}
-											author={post.author}
-											slug={post.slug}
-											excerpt={post.excerpt}
-										/>
-									</motion.div>
+									<div className="group" key={post.slug}>
+										<motion.div variants={item} className="grid">
+											<PostPreview
+												hideCoverImage
+												title={post.title}
+												coverImage={post.coverImage}
+												date={post.date}
+												author={post.author}
+												slug={post.slug}
+												excerpt={post.excerpt}
+											/>
+										</motion.div>
+										<div className="h-[1px] w-full mx-2 bg-slate-200 group-hover:invisible"/>
+									</div>
 								))}
 							</motion.div>
 						</section>

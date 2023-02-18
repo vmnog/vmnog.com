@@ -44,9 +44,8 @@ const MoreStories = ({ posts }: Props) => {
 				className="grid grid-cols-1 md:grid-cols-2 md:gap-x-16 lg:gap-x-32 gap-y-20 md:gap-y-32 mb-32"
 			>
         {posts.map((post) => (
-					<motion.div variants={item}>
+					<motion.div variants={item} key={post.slug}>
 						<PostPreview
-							key={post.slug}
 							title={post.title}
 							coverImage={post.coverImage}
 							date={post.date}

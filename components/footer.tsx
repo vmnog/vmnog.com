@@ -38,7 +38,7 @@ const Footer = () => {
 			transition={{ duration: 0.5, delay: 1.2 }}
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
-			className="bg-neutral-50 border-t border-neutral-200"
+			className="bg-neutral-50"
 			>
       <Container>
         <div className="py-28 flex flex-col lg:flex-row items-center justify-between">
