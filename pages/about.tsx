@@ -10,7 +10,7 @@ export default function AboutPage() {
 	return (
 		<>
 			<Head>
-				<title>{`About - ${AUTHOR_NAME} (${AUTHOR_NICK}) | Frontend Developer`}</title> 
+				<title>{`About - ${AUTHOR_NAME} (${AUTHOR_NICK}) | Frontend Developer`}</title>
 			</Head>
 			<Layout>
 				<Container className="grid gap-20 max-w-lg">
@@ -21,13 +21,13 @@ export default function AboutPage() {
 						className="grid grid-cols-1 md:grid-cols-2 items-center gap-10 max-w-4xl mx-auto"
 					>
 						<div className="grid gap-10">
-							<motion.h1 
+							<motion.h1
 								transition={{ duration: 0.5 }}
 								initial={{ opacity: 0, y: 20 }}
 								animate={{ opacity: 1, y: 0 }}
 							className="text-7xl font-bold tracking-tighter leading-[3rem] lowercase">About</motion.h1>
 							<Image
-								className="rounded-lg grayscale"
+								className="rounded-3xl"
 								src={'https://github.com/vmnog.png'}
 								alt={`${AUTHOR_NAME}`}
 								width={400}

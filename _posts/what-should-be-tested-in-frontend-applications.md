@@ -5,7 +5,7 @@ coverImage: '/assets/blog/what-should-be-tested-in-frontend-applications/cover.j
 date: '2023-02-14T22:32:00.000Z'
 author:
   name: Victor Nogueira
-  picture: '/assets/blog/authors/vmnog.jpg'
+  picture: 'https://github.com/vmnog.png'
 ogImage:
   url: '/assets/blog/what-should-be-tested-in-frontend-applications/cover.jpg'
 ---
