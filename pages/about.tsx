@@ -28,10 +28,11 @@ export default function AboutPage() {
 							className="text-7xl font-bold tracking-tighter leading-[3rem] lowercase">About</motion.h1>
 							<Image
 								className="rounded-3xl"
-								src={'https://github.com/vmnog.png'}
+								src={'/assets/blog/authors/vmnog.jpg'}
 								alt={`${AUTHOR_NAME}`}
 								width={400}
 								height={400}
+								quality={100}
 							/>
 						</div>
 
