@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { AUTHOR_NICK } from '../lib/constants'
 import Container from './container'
 import {
@@ -10,58 +9,81 @@ import {
   Button,
 } from '@chakra-ui/react'
 import { Menu as MenuIcon} from 'react-feather'
-import {gray} from 'tailwindcss/colors'
+import {white} from 'tailwindcss/colors'
+import {motion} from 'framer-motion'
+import {useCallback } from 'react'
+import {useRouter} from 'next/router'
+import classNames from 'classnames'
 
-type Tab = { name: string; path: string; };
+type Tab = { name: string; path: string; isActive: boolean };
 
 const TABS: Tab[] = [
-  { name: 'Home', path: '/' },
-  { name: 'About me', path: '/about' },
-  { name: 'Blog', path: '/blog' },
-  { name: 'Projects', path: '/projects' },
+  { name: 'About', path: '/about', isActive: false },
+  { name: 'Blog', path: '/posts', isActive: false },
 ]
 
+type Props = {
+	shouldAnimateOnStart: boolean;
+}
 
-const Header = () => {
-  const router = useRouter();
+const Header = ({ shouldAnimateOnStart }: Props) => {
+	const router = useRouter();
+
+	const reloadPage = useCallback(() => {
+		if(router.pathname === '/') {
+			location.reload();
+		}
+	}, [router]);
+
+	const isActiveRoute = useCallback((route: Tab) => {
+		return router.pathname === route.path;
+	}, [router]);
 
   return (
-    <Container>
-      <h2 className="text-2xl md:text-4xl font-bold tracking-tight md:tracking-tighter leading-tight mb-20 mt-8 grid grid-cols-2 md:grid-cols-header">
-        <div>
-          {!(router.pathname === '/') && (
-            <Link href="/" className="hover:underline">
-              {AUTHOR_NICK}.
-            </Link>
-          )}
-        </div>
+		<motion.header
+			transition={{ duration: 0.5 }}
+			initial={{ opacity: shouldAnimateOnStart ? 0 : 1 }}
+			animate={{ opacity: 1 }}
+		>
+			<Container>
+				<h2 className="text-2xl md:text-4xl font-bold tracking-tight md:tracking-tighter leading-tight mb-20 mt-8 grid grid-cols-1 md:grid-cols-header">
+						<div className="w-full flex justify-between items-center">
+							<Link onClick={reloadPage} href="/" className="text-4xl font-bold tracking-tighter leading-tight hover:underline">
+								{AUTHOR_NICK}.
+							</Link>
 
-          <div className='flex justify-end md:hidden'>
-            <Menu>
-              <MenuButton as={Button} bgColor={gray[100]}>
-                <MenuIcon />
-              </MenuButton>
-              <MenuList>
-                {TABS.map(tab => (
-                    <Link key={tab.name} href={tab.path} className="hover:underline font-normal">
-                      <MenuItem className='text-red-500'>
-                          {tab.name}
-                      </MenuItem>
-                    </Link>
-                ))}
-              </MenuList>
-            </Menu>
-          </div>
+							<nav  className="md:hidden">
+								<Menu>
+									<MenuButton as={Button} bgColor={white}>
+										<MenuIcon />
+									</MenuButton>
+									<MenuList>
+										{TABS.map((tab) => (
+												<Link key={tab.name} href={tab.path} className={
+														classNames("hover:underline", { "underline": isActiveRoute(tab) })
+												}>
+													<MenuItem>
+															<span className="lowercase font-normal">{tab.name}</span>
+													</MenuItem>
+												</Link>
+										))}
+									</MenuList>
+								</Menu>
+							</nav>
+						</div>
 
-        <div className='justify-end gap-6 text-2xl flex-wrap hidden md:flex'>
-          {TABS.map(tab => (
-            <Link key={tab.name} href={tab.path} className="hover:underline">
-              {tab.name}
-            </Link>
-          ))}
-        </div>
-      </h2>
-    </Container>
+					<div className="justify-end gap-6 text-2xl flex-wrap hidden md:flex lowercase">
+						{TABS.map((tab) => (
+							<Link key={tab.name} href={tab.path} className={
+														classNames("hover:underline font-normal", { "underline": isActiveRoute(tab) })
+												}>
+								{tab.name}
+							</Link>
+						))}
+					</div>
+				</h2>
+			</Container>
+		</motion.header>
   )
 }
 

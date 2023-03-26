@@ -1,6 +1,7 @@
 import { AUTHOR_NAME } from '../lib/constants'
 import Container from './container'
 import {GitHub, Instagram, Linkedin, Twitter} from 'react-feather'
+import {motion} from 'framer-motion';
 
 type SocialMedia = {
   name: string;
@@ -33,11 +34,16 @@ const SOCIALS: SocialMedia[] = [
 
 const Footer = () => {
   return (
-    <footer className="bg-neutral-50 border-t border-neutral-200">
+    <motion.footer
+			transition={{ duration: 0.5, delay: 1.2 }}
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			className="bg-neutral-50"
+			>
       <Container>
         <div className="py-28 flex flex-col lg:flex-row items-center justify-between">
           <h3 className="text-xl font-bold tracking-tighter leading-tight text-center lg:text-left mb-10 lg:mb-0 lg:pr-4">
-            <span className='font-semibold'>By </span> {AUTHOR_NAME}
+            <span className="text-lg font-normal">By</span> {AUTHOR_NAME}
           </h3>
           <div className="flex flex-col lg:flex-row justify-center items-center lg:pl-4">
             {SOCIALS.map(social => (
@@ -56,7 +62,7 @@ const Footer = () => {
           </div>
         </div>
       </Container>
-    </footer>
+    </motion.footer>
   )
 }
 

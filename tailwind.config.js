@@ -3,16 +3,19 @@ module.exports = {
   content: ['./components/**/*.tsx', './pages/**/*.tsx'],
   theme: {
     extend: {
+			screens: {
+				xs: '320px', 
+			},
       colors: {
         'accent-1': '#FAFAFA',
         'accent-2': '#EAEAEA',
         'accent-7': '#333',
         success: '#0070f3',
         cyan: '#79FFE1',
-        'code-gradient-1': '#0a111e',
-        'code-gradient-2': '#0c1831',
-        'code-gradient-3': '#421e3f',
-      },
+				'code-gradient-1': '#0a111e',                                           
+				'code-gradient-2': '#0c1831',                                           
+				'code-gradient-3': '#421e3f',
+			},
       spacing: {
         28: '7rem',
       },
