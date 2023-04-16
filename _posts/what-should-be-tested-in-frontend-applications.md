@@ -10,7 +10,7 @@ ogImage:
   url: '/assets/blog/what-should-be-tested-in-frontend-applications/cover.jpg'
 ---
 
-<hr/>
+# What should be tested in frontend applications?
 
 Unit testing is a critical component of modern software development. It allows developers to verify the correctness of their code, catch defects early, and prevent regressions. Angular, a popular front-end framework, provides a robust testing framework that allows developers to write unit tests for their code. In this article, we will explore how to set up Angular unit tests as a senior developer.
 
