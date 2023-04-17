@@ -306,8 +306,8 @@ Notice how `tokens.json` had a structure that was not valid because references d
 
 At this point, you can run `$ npm run build` command and generate the following SCSS variables (`tokens.scss`):
 
-    $bp-ref.color.black: #000000;
-    $bp-ref.color.black-transparent: #00000050;
+    $bp-ref-color-black: #000000;
+    $bp-ref-color-black-transparent: #00000050;
     ...
 
 # Extra steps
