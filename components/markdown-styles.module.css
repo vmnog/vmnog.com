@@ -33,7 +33,7 @@
 }
 
 .markdown pre {
-  @apply leading-normal cursor-pointer text-sm text-white p-4 select-all overflow-auto rounded-lg transition-all shadow-sm bg-gradient-to-r from-code-gradient-1/90 via-code-gradient-2/90 to-code-gradient-3/90;
+  @apply leading-normal cursor-pointer text-sm text-white p-4 select-all overflow-auto sm:overflow-x-hidden rounded-lg transition-all shadow-sm bg-gradient-to-r from-code-gradient-1/90 via-code-gradient-2/90 to-code-gradient-3/90;
 }
 
 .markdown pre code {
@@ -41,7 +41,7 @@
 }
 
 .markdown code {
-  @apply cursor-pointer text-sm text-white p-1 select-all overflow-auto rounded-lg transition-all bg-black/50;
+  @apply cursor-pointer text-sm text-white p-1 select-all overflow-auto sm:overflow-x-hidden rounded-lg transition-all bg-black/50;
 }
 
 .markdown blockquote {
