@@ -1,69 +1,43 @@
-import { AUTHOR_NAME } from '../lib/constants'
-import Container from './container'
-import {GitHub, Instagram, Linkedin, Twitter} from 'react-feather'
-import {motion} from 'framer-motion';
-
-type SocialMedia = {
-  name: string;
-  icon: JSX.Element;
-  profileUrl: string;
-} 
-
-const SOCIALS: SocialMedia[] = [
-  {
-    name: 'Instagram',
-    icon: <Instagram />,
-    profileUrl: 'https://www.instagram.com/v_mnog/'
-  },
-  {
-    name: 'Github',
-    icon: <GitHub />,
-    profileUrl: 'https://github.com/vmnog'
-  },
-  {
-    name: 'Linkedin',
-    icon: <Linkedin />,
-    profileUrl: 'https://www.linkedin.com/in/vmnogueira/'
-  },
-  {
-    name: 'Twitter',
-    icon: <Twitter />,
-    profileUrl: 'https://twitter.com/v_mnog'
-  }
-];
-
-const Footer = () => {
+import { Container, KommyLink, Logo } from "components";
+import { navigation } from "config";
+const nav = navigation.footerNav;
+export default function Footer() {
   return (
-    <motion.footer
-			transition={{ duration: 0.5, delay: 1.2 }}
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			className="bg-neutral-50"
-			>
-      <Container>
-        <div className="py-28 flex flex-col lg:flex-row items-center justify-between">
-          <h3 className="text-xl font-bold tracking-tighter leading-tight text-center lg:text-left mb-10 lg:mb-0 lg:pr-4">
-            <span className="text-lg font-normal">By</span> {AUTHOR_NAME}
-          </h3>
-          <div className="flex flex-col lg:flex-row justify-center items-center lg:pl-4">
-            {SOCIALS.map(social => (
-              <a
-                key={social.name}
-                href={social.profileUrl}
-                target="_blank"
-                className="mx-3 flex items-center gap-2 text-black hover:bg-gray-100 font-semibold py-3 px-12 lg:px-8 duration-200 transition-colors mb-6 lg:mb-0"
+    <Container fullSize as="footer">
+      <hr className="mt-12 border-dark" />
+      <Container
+        as="div"
+        className="flex flex-col py-12 sm:px-6 md:flex-row md:items-center md:justify-between"
+      >
+        {nav.length && (
+          <div className="flex justify-center space-x-6 md:order-2">
+            {nav.map((item) => (
+              <KommyLink
+                key={item.title}
+                href={item.href}
+                animatedUnderline
+                className="font-medium text-dark"
               >
-                <>
-                  {social.icon}
-                  {social.name}
-                </>
-              </a>
+                {item.title}
+              </KommyLink>
             ))}
           </div>
+        )}
+        <div className="mt-8 flex flex-col items-center justify-center font-medium md:order-1 md:mt-0 md:flex-row md:flex-nowrap md:justify-start">
+          <Logo textSize="text-base font-medium" />
+          <p className="ml-0 mt-4 md:mt-0 md:ml-2">
+            &copy; 2023 &mdash;{" "}
+            <KommyLink
+              dottedLine
+              animatedUnderline
+              href="https://github.com/ekomenyong/ekomenyong.com"
+            >
+              Design and development by me
+            </KommyLink>
+            .
+          </p>
         </div>
       </Container>
-    </motion.footer>
-  )
+    </Container>
+  );
 }
-
-export default Footer

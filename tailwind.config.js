@@ -1,44 +1,61 @@
 /** @type {import('tailwindcss').Config} */
+
+const { fontFamily } = require("tailwindcss/defaultTheme");
+
 module.exports = {
-  content: ['./components/**/*.tsx', './pages/**/*.tsx'],
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./content/**/*.{md,mdx}",
+  ],
   theme: {
     extend: {
-			screens: {
-				xs: '320px', 
-			},
       colors: {
-        'accent-1': '#FAFAFA',
-        'accent-2': '#EAEAEA',
-        'accent-7': '#333',
-        success: '#0070f3',
-        cyan: '#79FFE1',
-				'code-gradient-1': '#0a111e',                                           
-				'code-gradient-2': '#0c1831',                                           
-				'code-gradient-3': '#421e3f',
-			},
-      spacing: {
-        28: '7rem',
+        light: "#fafafa",
+        dark: "#171717",
+        brand: {
+          50: "#fff6fa",
+          100: "#ffedf5",
+          200: "#ffd3e5",
+          300: "#ffb8d5",
+          400: "#fe82b6",
+          500: "#fe4d97",
+          600: "#e54588",
+          700: "#bf3a71",
+          800: "#982e5b",
+          900: "#7c264a",
+          DEFAULT: "#fe4d97",
+        },
       },
-      letterSpacing: {
-        tighter: '-.04em',
+    },
+    fontFamily: {
+      sans: ["var(--font-neue)", ...fontFamily.sans],
+      mono: ["var(--font-lilex)", ...fontFamily.mono],
+    },
+    keyframes: {
+      jelly: {
+        "0%,100%": { transform: "scale(1, 1)" },
+        "25%": { transform: "scale(0.95, 1.05)" },
+        "50%": { transform: "scale(1.05, 0.95)" },
+        "75%": { transform: "scale(0.95, 1.05)" },
       },
-      lineHeight: {
-        tight: 1.2,
-      },
-      fontSize: {
-        '5xl': '2.5rem',
-        '6xl': '2.75rem',
-        '7xl': '4.5rem',
-        '8xl': '6.25rem',
-      },
-      boxShadow: {
-        sm: '0 5px 10px rgba(0, 0, 0, 0.12)',
-        md: '0 8px 30px rgba(0, 0, 0, 0.12)',
-      },
-      gridTemplateColumns: {
-        'header': '200px 1fr'
-      }
+    },
+    animation: {
+      jelly: "jelly 0.5s",
+    },
+    animationDuration: {
+      1500: "1500ms",
+      2000: "2000ms",
+      2500: "2500ms",
+    },
+    backgroundImage: {
+      "hero-gradient": "url('/hero-gradient.webp')",
     },
   },
-  plugins: [],
-}
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
+  ],
+};
