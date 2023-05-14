@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[vmnog]]></title><description><![CDATA[I write about code 'n stuff]]></description><link>https://vmnog.com</link><image><url>https://vmnog.com/icon.png</url><title>vmnog</title><link>https://vmnog.com</link></image><generator>RSS for Node</generator><lastBuildDate>Sun, 14 May 2023 13:58:37 GMT</lastBuildDate><atom:link href="https://vmnog.com/rss.xml" rel="self" type="application/rss+xml"/><pubDate>Tue, 03 Mar 2020 04:00:00 GMT</pubDate><copyright><![CDATA[2023 Victor Nogueira]]></copyright><language><![CDATA[en]]></language><managingEditor><![CDATA[contact@vmnog.com]]></managingEditor><webMaster><![CDATA[contact@vmnog.com]]></webMaster><ttl>60</ttl><item><title><![CDATA[Building a Design System with Synchronized Tokens in Figma]]></title><description><![CDATA[<h1 id="buildingadesignsystemwithsynchronizedtokensinfigma">Building a Design System with Synchronized Tokens in Figma</h1>
+<p>Design tokens are an essential building block for creating scalable and maintainable design systems. They provide a way to manage and share values such as colors, typography, and spacing across platforms and teams.</p>
+<p>In this article, we will discuss the process of building a design system with synchronized Figma tokens. The design system will be created using a combination of tools such as Figma, Token Studio, Token Transformer, and Style Dictionary. These tools will help us export design tokens, format them into a compatible structure, and ultimately convert them into SCSS variables for use in our Angular components.</p>
+<h2 id="introduction">Introduction</h2>
+<p>To create a scalable and maintainable design system, we will use the following tools:</p>
+<ol>
+<li><strong>Figma</strong>: A design tool for creating UI designs and design systems.</li>
+<li><strong>Tokens Studio</strong>: A Figma plugin for managing and exporting design tokens.</li>
+<li><strong>Azure Devops</strong>: A GIT repository option that we'll use to sync with Tokens Studio.</li>
+<li><strong>Token Transformer</strong>: A utility for transforming JSON token structures.</li>
+<li><strong>Style Dictionary</strong>: A tool for converting design tokens into various formats, such as SCSS variables.</li>
+</ol>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>Before diving into the tutorial, ensure you have:</p>
+<ul>
+<li>Node.js and npm installed on your computer.</li>
+<li>A Figma project with Tokens Studio plugin setup (can be free version).</li>
+<li>An Azure Devops account (can be free version).</li>
+</ul>
+<h2 id="configuringtokensstudio">Configuring Tokens Studio</h2>
+<p>First, you need to have a <a href="https://www.figma.com/">Figma</a> project and then access <a href="https://tokens.studio/">Tokens Studio</a> website to follow the installation guide.</p>
+<p>Also, follow their <a href="https://docs.tokens.studio/sync/sync">Sync</a> tutorial to set up your GIT repository with your Figma Plugin. After this step, you'll be able to push directly from Figma to your repository or submit Pull Requests.</p>
+<p>Just for reference, in my case, I used <a href="https://docs.tokens.studio/sync/ado">Azure Devops</a> sync option.</p>
+<h2 id="projectsetup">Project Setup</h2>
+<p>First, create a new directory for your project and navigate to it:</p>
+<pre><code class="bash language-bash">$ mkdir design-token-system
+$ cd design-token-system
+</code></pre>
+<p>Next, initialize a new npm project and install <a href="https://amzn.github.io/style-dictionary/">Style Dictionary</a> and <a href="https://www.npmjs.com/package/token-transformer">Token Transformer</a>:</p>
+<pre><code class="bash language-bash">$ npm init -y
+$ npm install style-dictionary@3.7.2
+$ npm install token-transformer@0.0.32
+</code></pre>
+<h2 id="projectstructure">Project Structure</h2>
+<p>To create a design token system, we need the following files:</p>
+<ol>
+<li>package.json</li>
+<li>config.js</li>
+<li>tokens.json <em>(generated file exported from Tokens Studios)</em></li>
+</ol>
+<p>We'll go through each file and explain their purpose and content.</p>
+<h3 id="packagejson">package.json</h3>
+<p>This file keeps track of the project dependencies and scripts. We'll need to add two scripts: one for transforming tokens and the other for building platform-specific tokens (notice that <code>lodash</code> was automatically installed because it's a <code>token-transformer</code> internal dependency):</p>
+<pre><code class="json language-json">    {
+      "name": "design-token-system",
+      "version": "1.0.0",
+      "scripts": {
+        "build": "npm run transform &amp;&amp; node config.js",
+        "transform": "token-transformer tokens/tokens.json tokens/token_transformer.json"
+      },
+      "dependencies": {
+        "lodash": "^4.17.21",
+        "style-dictionary": "^3.7.2",
+        "token-transformer": "^0.0.32"
+      }
+    }
+</code></pre>
+<h4 id="scripts">Scripts</h4>
+<p>We created two commands <code>build</code> and <code>transform</code>:</p>
+<ul>
+<li><strong>build</strong>: Runs <code>transform</code> command and run the <code>config.js</code> file using node.</li>
+<li><strong>transform</strong>: Runs <code>token-transformer</code> to generate <code>token_transformer.json</code> file based on <code>tokens.json</code> file. By doing that we are correcting the json file tree path (necessary step with you are using Tokens Studio free version).</li>
+</ul>
+<h3 id="tokensjson">tokens.json</h3>
+<p>This file defines the raw design tokens for our system. In our Design System this file is fully syncronized with our Azure Devops GIT repoistory, in a way that we can push new changes directly from Figma and this will reflect changes in our generated tokens (<code>tokens.json</code>). This file contains all the Figma tokens that our Design System is composed of. For example, we have colors, border radius, and typography settings.</p>
+<p>Notice how the JSON tree path to get color <strong>black</strong> would be <code>ref.$bp.ref.color.black</code>, which would result into the value <code>#000000</code>.</p>
+<pre><code class="json language-json">    {
+      "ref": {
+        "$bp": {
+          "ref": {
+            "color": {
+              "black": {
+                "value": "#000000",
+                "type": "color"
+              },
+              ...
+            },
+            "borderRadius": {
+              ...
+            },
+            "typography": {
+              ...
+            },
+            ...
+          }
+        }
+      }
+    }
+</code></pre>
+<p>However, when we are using Tokens Studio free version we run into a issue here, because when we use tokens that references other tokens values we'll get an error.</p>
+<p>For example: </p>
+<pre><code class="json language-json">    {
+      "ref": {
+        "$bp": {
+          "ref": {
+            "color": {
+              "black": {
+                "value": "#000000",
+                "type": "color"
+              },
+              "black-transparent": {
+                "value": "{$bp.ref.color.black}50", // ❌ &lt;- This is not valid tree path
+                "type": "color"
+              },
+            },
+          }
+        }
+      }
+    }
+</code></pre>
+<p>When we run Style Dictionary to create the SCSS variables it will try to mount the <code>black-transparent</code> color and will not be able to find the token reference value of <code>{$bp.ref.color.black}</code>, because the correct tree path would be <code>${ref.$bp.ref.color.black}</code>.</p>
+<h4 id="whywehavethisbehaviorwhenexportingtokensfromtokensstudio">Why we have this behavior when exporting tokens from Tokens Studio?</h4>
+<p>Because we are using free version and in this case we have multiple origins for our tokens. To solve this origin case, Tokens Studios create this <em>"parent key"</em> before <code>$bp</code> which results into invalid tokens references.</p>
+<p>To fix this issue we need to modify the JSON to remove this <em>parent key</em> (<code>ref</code>) that comes before the key <code>$bp</code>. This is my Design Token structure, this structure may vary depending on your personal case. In the next steps I'll show you how we fix this using a npm package called <code>token-transformer</code>.</p>
+<h3 id="configjs">config.js</h3>
+<p>Style Dictionary is a powerful tool for managing design tokens across platforms and teams. In this article, we'll explore how to customize the output format of the design tokens specifically for SCSS by creating a custom formatter function.</p>
+<pre><code class="javascript language-javascript">const StyleDictionary = require('style-dictionary');
+
+
+StyleDictionary.registerFormat({
+  name: 'scss/object-variables',
+  formatter: function({ dictionary }) {
+    let scssVariableToken = '';
+
+    dictionary.allProperties.forEach((prop) =&gt; {
+      if (prop.type === 'borderRadius') {
+        scssVariableToken += `$${prop.name}: ${prop.value}px;\n`;
+        return;
+      }
+
+      if (prop.type === 'boxShadow') {
+        const { x, y, blur, spread, color } = prop.value;
+        scssVariableToken += `$${prop.name}: ${x}px ${y}px ${blur}px ${spread}px ${color};\n`;
+        return;
+      }
+
+      if (prop.type === 'typography') {
+        const { fontFamily, fontSize, fontWeight, lineHeight, letterSpacing } = prop.value;
+        scssVariableToken += `$${prop.name}-font-family: '${fontFamily}';\n`;
+        scssVariableToken += `$${prop.name}-font-size: ${fontSize};\n`;
+        scssVariableToken += `$${prop.name}-font-weight: ${fontWeight};\n`;
+        scssVariableToken += `$${prop.name}-line-height: ${lineHeight};\n`;
+        scssVariableToken += `$${prop.name}-letter-spacing: ${letterSpacing};\n`;
+        return;
+      }
+
+      if (prop.type === 'border') {
+        const { color, width, style } = prop.value;
+        scssVariableToken += `$${prop.name}: ${width}px ${style} ${color};\n`;
+        return;
+      }
+
+      scssVariableToken += `$${prop.name}: ${prop.value};\n`;
+    });
+
+    return scssVariableToken;
+  },
+});
+
+const config = {
+  source: ['tokens/token_transformer.json'],
+  platforms: {
+    scss: {
+      transformGroup: 'scss',
+      buildPath: 'output/',
+      files: [
+        {
+          destination: 'tokens.scss',
+          format: 'scss/object-variables',
+        }
+      ],
+    },
+  },
+};
+
+StyleDictionary.extend(config).buildAllPlatforms();
+</code></pre>
+<h4 id="codeexplanation">Code Explanation:</h4>
+<ol>
+<li>Import the Style Dictionary library:</li>
+</ol>
+<p><code>const StyleDictionary = require('style-dictionary');</code> </p>
+<ol start="2">
+<li>Register a custom format named <code>scss/object-variables</code> by passing an object with <code>name</code> and <code>formatter</code> properties to <code>StyleDictionary.registerFormat()</code> method:</li>
+</ol>
+<pre><code class="javascript language-javascript">StyleDictionary.registerFormat({
+  name: 'scss/object-variables',
+  formatter: function({ dictionary }) {
+    // ...
+  },
+}); 
+</code></pre>
+<ol start="3">
+<li>Inside the formatter function, we declare a variable <code>scssVariableToken</code> to store our SCSS variables. For each design token property, we check its type (e.g., borderRadius, boxShadow, typography, border), and format the SCSS variable accordingly:</li>
+</ol>
+<pre><code class="javascript language-javascript">dictionary.allProperties.forEach((prop) =&gt; {
+  // Format the SCSS variable based on the prop.type
+}); 
+</code></pre>
+<ol start="4">
+<li>After formatting all the SCSS variables, we return the final <code>scssVariableToken</code> string as the output:</li>
+</ol>
+<pre><code class="javascript language-javascript">return scssVariableToken; 
+</code></pre>
+<ol start="5">
+<li>Create the configuration object containing the input source and output configuration for the SCSS platform:</li>
+</ol>
+<pre><code class="javascript language-javascript">const config = {
+         source: ['tokens/token_transformer.json'],
+         platforms: {
+           scss: {
+             transformGroup: 'scss',
+             buildPath: 'output/',
+             files: [
+               {
+                 destination: 'tokens.scss',
+                 format: 'scss/object-variables',
+               }
+             ],
+           },
+         },
+       };
+</code></pre>
+<ul>
+<li><strong>source:</strong> References what file we are reading to apply the style-dictionary formatter.</li>
+<li><strong>platforms</strong>: References which file extensions we want to generate the output, in this case we are only using scss files but it could be multiple other formats such as JS, TS, and etc…</li>
+</ul>
+<p>And finally we are calling <code>buildAllPlatforms()</code> function using our configuration so that when we call the <code>config.js</code> file in our npm script command <code>$ npm run build</code> it'll run this function.</p>
+<p>By following these steps, we've customized the Style Dictionary output for SCSS variables using a custom formatter function. This approach provides greater flexibility when managing design tokens in your projects, making it easier to adapt to different project requirements and conventions.</p>
+<h2 id="transformingandbuildingdesigntokens">Transforming and Building Design Tokens</h2>
+<p>With everything set up, run the following script:</p>
+<pre><code class="bash language-bash">$ npm run transform
+</code></pre>
+<p>The first script will get the <code>tokens/tokens.json</code> file and generates the <code>tokens/token_transformer.json</code> with corrected token's references path.</p>
+<h3 id="token_transformerjson">token_transformer.json</h3>
+<p>This file is generated by running the <code>$ npm run transform</code> script. It is responsible for mapping the raw design tokens to platform-specific tokens. We define components and their respective token values:</p>
+<pre><code class="json language-json">{
+    "$bp": {
+      "ref": {
+        "color": {
+          "black": {
+            "value": "#000000",
+            "type": "color"
+          },
+          "black-transparent": {
+            "value": "{$bp.ref.color.black}50", // ✅ &lt;- Now this is valid tree path!!!
+            "type": "color"
+          },
+        },
+      }
+    }
+}
+</code></pre>
+<p>Notice how <code>tokens.json</code> had a structure that was not valid because references didn't match the existent objects tree path. After generating the <code>token_transformer.json</code>, all values were retained, and the object's tree path token's references have been corrected. Without this step, Style Dictionary would throw an error saying that it could not find the correct references for our tokens in our <code>tokens.json</code> file.</p>
+<h1 id="resultoutput">Result (output)</h1>
+<p>At this point, you can run <code>$ npm run build</code> command and generate the following SCSS variables (<code>tokens.scss</code>):</p>
+<pre><code class="scss language-scss">$bp-ref-color-black: #000000;
+$bp-ref-color-black-transparent: #00000050;
+</code></pre>
+<h1 id="extrasteps">Extra steps</h1>
+<p>An optional step I implemented in my design system is adding a CI/CD workflow to automatically run the <code>build</code> command and commit the tokens every time the <code>tokens.json</code> received an update from Figma. You can accomplish this by creating a pipeline.yaml file (In my case using Azure Devops Pipeline).</p>
+<p>For example, you can create a pipeline that triggers on changes to the <code>tokens.json</code> file, runs the <code>npm run build</code> command, and commits the generated SCSS variables back to the repository. This ensures that your design tokens are always up-to-date with the latest changes in your Figma design.</p>
+<p>Here is my <code>azure-pipelines-core.yml</code> file:</p>
+<pre><code class="yaml language-yaml">trigger:
+  branches:
+    include:
+      - master
+  paths:
+    include:
+      - packages/core/tokens/tokens.json
+    exclude:
+      - packages/frameworks/**
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - name: IS_USER_AUTHORIZED
+    value: ${{ eq(variables['Build.RequestedForEmail'], 'tokens_studio_user@email.com') }}
+
+stages:
+  - stage:
+    displayName: Starting Process
+    condition: eq(variables.IS_USER_AUTHORIZED, 'true')
+    jobs:
+      - job:
+        displayName: Build Stage
+        steps:
+          - task: UseNode@1
+            inputs:
+              version: "16.x"
+              checkLatest: true
+            displayName: "Setup Environment"
+
+          - script: yarn install
+            displayName: "Install Dependencies"
+
+          - script: yarn build
+            displayName: "Build"
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: "packages/core/output/"
+              ArtifactName: "tokens"
+              publishLocation: "Container"
+            displayName: "Publish project"
+</code></pre>
+<p>This YAML file defines a CI/CD pipeline for a project. Let's go through each section step by step:</p>
+<ol>
+<li><p><strong>Trigger</strong>: Specifies when the pipeline should run. In this case, it is set to trigger when there are changes to the <code>master</code> branch and specifically, when the <code>tokens.json</code> file in the <code>packages/core/tokens</code> folder is modified. Changes to the files within the <code>packages/frameworks</code> folder are excluded from triggering the pipeline.</p></li>
+<li><p><strong>Pool</strong>: Defines the type of virtual machine (VM) used for the pipeline. Here, it is set to use the latest version of the Ubuntu image.</p></li>
+<li><p><strong>Variables</strong>: Sets custom variables for use within the pipeline. In this case, a variable named <code>IS_USER_AUTHORIZED</code> is set to <code>true</code> if the email address of the user who requested the build matches <a href="mailto:tokens_studio_user@email.com">tokens<em>studio</em>user@email.com</a>, which in my case is the e-mail of the person who has the PAT (Personal Access Token) registered in Tokens Studio plugin in our Figma, so he is the one who makes GIT changes in the <code>tokens.json</code> file directly from Figma.</p></li>
+<li><p><strong>Stages</strong>: Describes the different stages of the pipeline. In this example, there is only one stage named "Starting Process". It will only execute if the <code>IS_USER_AUTHORIZED</code> variable is set to <code>true</code>.</p></li>
+<li><p><strong>Jobs</strong>: Lists the jobs that need to be performed during the pipeline. In this case, there is only one job named "Build Stage", which consists of several steps:</p>
+<ul>
+<li><p><strong>Setup Environment</strong>: Uses the <code>UseNode@1</code> task to install Node.js version 16.x and ensure it's the latest version.</p></li>
+<li><p><strong>Install Dependencies</strong>: Runs <code>yarn install</code> to install the project dependencies.</p></li>
+<li><p><strong>Build</strong>: Executes <code>yarn build</code> to build the project.</p></li>
+<li><p><strong>Publish project</strong>: Uses the <code>PublishBuildArtifacts@1</code> task to publish the build artifacts (output from the <code>packages/core/output/</code> folder) to a container with the name "tokens".</p></li></ul></li>
+</ol>
+<p>Overall, this pipeline is designed to automatically run when there are changes to the <code>tokens.json</code> file in the specified path. It then checks if the user who triggered the build is authorized before proceeding with setting up the environment, installing dependencies, building the project, and publishing the build artifacts.</p>
+<p>In this particular case, the design system is structured as a monorepo, which is a single repository containing multiple projects or packages. This is a common approach when managing multiple interconnected projects or when building scalable systems. Due to the monorepo structure, we use Yarn as our package manager instead of npm for managing dependencies and running scripts.</p>
+<p>Yarn is an alternative to npm and has some features that are particularly suited for monorepos, such as Workspaces, which makes it easier to manage dependencies and scripts across multiple packages within a single repository.</p>
+<p>The design system's token and output files are located in the <code>packages/core/</code> directory. This is specific to this project's architecture and may vary depending on your project setup. When working with your own design system or monorepo, make sure to adjust the file paths and structure according to your project's needs.</p>
+<h1 id="finalthoughts">Final thoughts</h1>
+<p>In conclusion, we discussed the process of building a design system with synchronized tokens in Figma, using a combination of tools such as Figma, Token Studio, Token Transformer, and Style Dictionary. The design system was set up as a monorepo, utilizing Yarn as the package manager, and organized with the token and output files located in the <code>packages/core/</code> directory. This structure is specific to this project and may vary depending on your own project setup.</p>
+<p>Throughout this article, we covered the steps of configuring Tokens Studio to sync with a GIT repository, setting up the project structure, transforming and building design tokens, and creating a CI/CD pipeline to automatically run the build process and commit the generated tokens when updates are made in Figma.</p>
+<p>By implementing this workflow, you can create a scalable and maintainable design system with design tokens that are always in sync with your Figma designs, ensuring consistency across platforms and teams.</p>]]></description><link>https://vmnog.com/blog/building-design-system-synchronized-tokens-figma</link><guid isPermaLink="true">https://vmnog.com/blog/building-design-system-synchronized-tokens-figma</guid><category><![CDATA[Figma]]></category><category><![CDATA[Design System]]></category><category><![CDATA[Style Dictionary]]></category><dc:creator><![CDATA[Victor Nogueira]]></dc:creator><pubDate>Tue, 18 Jul 2023 05:20:00 GMT</pubDate></item></channel></rss>
