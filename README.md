@@ -1,54 +1,34 @@
-# Next.js + TailwindCSS Frontend Developer Portfolio
+# NextJS - MDX - shadcn-ui - Tailwind - Blog
 
-Live website [vmnog.com](https://vmnog.com)
+**UPDATED on 2023-08-22 to use Next.js App Router!**
 
-This is the project for my developer portfolio created using [Next.js](https://nextjs.org/) and [TailwindCSS](https://tailwindcss.com/).
+A Next.js starter template for your next blog or personal site. Built with:
 
-## Features
-- Fast and efficient with server-side rendering
-- Responsive design with TailwindCSS
-- Easy customization with the modular design of TailwindCSS
-- Built with the latest web technologies and best practices
+- Next.js [App Router](https://nextjs.org/docs/app)
+- Content processing with [Contentlayer](https://www.contentlayer.dev/)
+- Write posts with [MDX](https://mdxjs.com/)
+- UI components with [shadcn-ui](https://ui.shadcn.com/)
+- Style with [Tailwind CSS](https://tailwindcss.com/)
+
+This Starter is **heavily** inspired by [Lee Robinson](https://github.com/leerob/leerob.io).
+
+👀 [View the Live Demo](https://nextjs-typescript-mdx-blog.vercel.app/)
 
 ## Getting Started
 
-To run this portfolio locally, follow these steps:
+```bash
+git clone https://github.com/ChangoMan/nextjs-mdx-blog.git
+cd nextjs-typescript-mdx-blog
 
-1. Clone the repository
-```
-$ git clone https://github.com/vmnog/vmnog.com.git
-```
+npm install
 
-2. Install dependencies
-```
-$ pnpm install
+npm run dev
 ```
 
-3. Run the development server
-```
-$ pnpm run dev
-```
+Your new site will be up at http://localhost:3000/
 
-4. Visit [http://localhost:3000](http://localhost:3000) in your browser to see the portfolio.
+Blog posts can be added to the `posts` directory, in the root folder.
 
-## Deployment
+Update the `WEBSITE_HOST_URL` when taking your site live. This lives in `/src/lib/constants.ts`
 
-This portfolio can be easily deployed to a variety of hosting platforms, such as [Vercel](https://vercel.com/), [Heroku](https://heroku.com/), or [Amazon Web Services (AWS)](https://aws.amazon.com/).
-
-## Customization
-
-To customize this portfolio to your needs, you can modify the contents of the pages, styles, and components folders.
-
-## Contributing
-
-Feel free to contribute to this project by opening an issue or submitting a pull request.
-
-## Credits
-
-- [Next.js](https://nextjs.org/)
-- [TailwindCSS](https://tailwindcss.com/)
-- [Blog Starter](https://github.com/vercel/next.js/tree/canary/examples/blog-starter)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Make sure to update the `sitemap.ts` file, specifically the `const routes` if you add more pages to the website.
