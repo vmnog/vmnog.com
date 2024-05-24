@@ -18,7 +18,7 @@ export function TerminalCommand({
         <span className='text-primary font-medium'>$</span>
         <span className='text-primary font-medium'>{command}</span>
       </h1>
-      <h2 className='text-5xl text-primary'>
+      <h2 className='text-4xl sm:text-5xl text-primary'>
         {output}&nbsp;
         <span className='text-primary animate-blink font-medium'>_</span>
       </h2>

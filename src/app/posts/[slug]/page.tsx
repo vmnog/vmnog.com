@@ -64,11 +64,11 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
 
   return (
     <div className='flex flex-col'>
-      <h1>{post.title}</h1>
+      <h1 className='text-2xl sm:text-5xl'>{post.title}</h1>
       <time className="my-4 block text-sm text-zinc-400" dateTime={post.date}>
         {format(parseISO(post.date), 'LLLL d, yyyy')}
       </time>
-      <article className="self-center prose dark:prose-invert">
+      <article className="sm:self-center prose dark:prose-invert">
         <MDXContent components={mdxComponents} />
       </article>
     </div>
