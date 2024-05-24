@@ -35,7 +35,7 @@ export default function Home() {
             <h2>./what-am-i-doing-atm</h2>
             <ul className='pl-8 mt-8 list-decimal'>
               <li className="leading-8">
-                Writing tech articles about my work here as <Link className='font-bold' href="/blog">@vmnog</Link>
+                Writing tech articles about my work here as <Link className='font-bold' href="/about">@vmnog</Link>
               </li>
               <li className="leading-8">
                 Recording Videos and Programming Courses for <Link className='font-bold' href="http://caraquecoda.com.br/">@caraquecoda</Link>

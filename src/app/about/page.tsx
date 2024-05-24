@@ -49,7 +49,7 @@ export default function About() {
 
         <p className="font-bold">-F --freetime</p>
         <p>
-          In my spare time, I enjoy sharing my experiences and knowledge by writing technical articles about the challenges I face in my daily work. Feel free to check them out <Link href="/blog" className='font-bold'>here</Link>.
+          In my spare time, I enjoy sharing my experiences and knowledge by writing technical articles about the challenges I face in my daily work. Feel free to check them out in <Link href="/blog" className='font-bold'>my blog</Link>.
         </p>
 
         <p className="font-bold">-O --opensource</p>
