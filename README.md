@@ -1,34 +1,36 @@
-# NextJS - MDX - shadcn-ui - Tailwind - Blog
+# Blog com Next.js, MDX, shadcn-ui e TailwindCSS
 
-**UPDATED on 2023-08-22 to use Next.js App Router!**
-
-A Next.js starter template for your next blog or personal site. Built with:
+Um template inicial com Next.js para o seu próximo blog ou site pessoal. Construído com:
 
 - Next.js [App Router](https://nextjs.org/docs/app)
-- Content processing with [Contentlayer](https://www.contentlayer.dev/)
-- Write posts with [MDX](https://mdxjs.com/)
-- UI components with [shadcn-ui](https://ui.shadcn.com/)
-- Style with [Tailwind CSS](https://tailwindcss.com/)
+- Processamento de conteúdo com [Contentlayer](https://www.contentlayer.dev/)
+- Escrita de posts com [MDX](https://mdxjs.com/)
+- Componentes de UI com [shadcn-ui](https://ui.shadcn.com/)
+- Estilização com [Tailwind CSS](https://tailwindcss.com/)
 
-This Starter is **heavily** inspired by [Lee Robinson](https://github.com/leerob/leerob.io).
+Este Starter é **fortemente** inspirado por [Lee Robinson](https://github.com/leerob/leerob.io).
 
-👀 [View the Live Demo](https://nextjs-typescript-mdx-blog.vercel.app/)
+👀 [Veja o Demo Ao Vivo](https://vmnog.com/)
 
-## Getting Started
+## Como Começar
 
 ```bash
-git clone https://github.com/ChangoMan/nextjs-mdx-blog.git
-cd nextjs-typescript-mdx-blog
+git clone https://github.com/vmnog/vmnog.com.git
+cd vmnog.com
 
-npm install
+pnpm install
 
-npm run dev
+pnpm run dev
 ```
 
-Your new site will be up at http://localhost:3000/
+Seu novo site estará disponível em http://localhost:3000/
 
-Blog posts can be added to the `posts` directory, in the root folder.
+Posts do blog podem ser adicionados ao diretório `posts`, na pasta raiz.
 
-Update the `WEBSITE_HOST_URL` when taking your site live. This lives in `/src/lib/constants.ts`
+Atualize o `WEBSITE_HOST_URL` ao publicar seu site. Esta configuração está em `/src/lib/constants.ts`
 
-Make sure to update the `sitemap.ts` file, specifically the `const routes` if you add more pages to the website.
+Certifique-se de atualizar o arquivo `sitemap.ts`, especificamente a constante `const routes` se adicionar mais páginas ao site.
+
+---
+
+Espero que você aproveite a utilização do nosso template para blog, e estamos ansiosos para ver as incríveis funcionalidades que você pode adicionar a ele!
