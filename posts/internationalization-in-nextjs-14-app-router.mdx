@@ -320,6 +320,7 @@ export function DictionaryProvider({
 ```tsx
 // root-layout.tsx
 
+import { Provider as JotaiProvider } from 'jotai'
 import { setDictionary, setLocale } from './dictionary-server-side';
 
 export default async function RootLayout({
@@ -331,16 +332,17 @@ export default async function RootLayout({
 }) {
   const dictionary = await getDictionaryByLocale(locale); // Load dictionary
 
- from JSON files
   setLocale(locale); // Set locale in server-side context
   setDictionary(dictionary); // Set dictionary in server-side context
 
   return (
     <html lang={locale}>
       <body className="antialiased">
-        <Providers locale={locale}>
-          {children}
-        </Providers>
+          <JotaiProvider>
+            <DictionaryProvider locale={locale}>
+              {children}
+            </DictionaryProvider>
+          </JotaiProvider>
       </body>
     </html>
   );
