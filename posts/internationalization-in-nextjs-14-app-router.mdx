@@ -1,0 +1,535 @@
+---
+title: Internationalization in Next.js 14 with App Router
+description: Internationalization (i18n) is essential for making web applications accessible to a global audience. With Next.js 14, you can seamlessly integrate i18n using the App Router, enabling both client-side and server-side dictionary access.
+date: 2024-05-24
+---
+
+<Image
+  alt={`Building a Design System with Synchronized Tokens in Figma`}
+  src={`/images/post-banner-i18n.png`}
+  width={1440}
+  height={960}
+  priority
+/>
+
+Internationalization (i18n) is essential for making web applications accessible to a global audience. With Next.js 14, you can seamlessly integrate i18n using the App Router, enabling both client-side and server-side dictionary access.
+
+In this article, we'll walk through setting up i18n in a Next.js 14 application, integrating it with middleware for authentication, and creating a language switcher for dynamic language selection.
+
+### In the end of this tutorial, you will have a robust Next.js 14 application with the following internationalization (i18n) features:
+
+1. **App Router Integration**: Seamlessly integrated i18n with Next.js 14's App Router, allowing for smooth navigation and language routing within your application.
+2. **Server-Side Context Management**: Efficiently handled server-side context for locale and dictionary management using utility functions, ensuring that translations are readily available for server-side rendering.
+3. **Client-Side Global State Management**: Utilized Jotai for managing the dictionary and locale state on the client side, providing a centralized and reactive system for handling internationalization dynamically.
+4. **Auto-Generated TypeScript from JSON Dictionaries**: Leveraged TypeScript to automatically generate types from JSON dictionaries, enhancing type safety and reducing the likelihood of errors in your codebase.
+5. **Cookie Handling**: Implemented cookie management to remember user language preferences, ensuring a consistent user experience across sessions.
+6. **Automatically Routing Middleware Integration**: Integrated middleware for automatic language routing, adapting to user preferences and ensuring that the correct language version of the site is displayed.
+
+By incorporating these features, your Next.js 14 application will be well-equipped to provide a seamless multilingual experience, making it accessible and user-friendly for a global audience.
+
+>  💡 This article was written while I was working on the open-source project [Nivo.video](https://nivo.video/). The insights and techniques shared here are based on my experience and contributions to this project, aimed at enhancing the internationalization capabilities in Next.js applications.
+
+## Table of Contents
+
+1. **Setting Up a Next.js 14 Project**
+2. **Configuring Internationalization**
+3. **Enabling Client-side and Server-side Dictionary Access**
+4. **Integrating Middleware for Authentication (Optional)**
+5. **Creating a Language Switcher**
+6. **Wrapping Providers with DictionaryProvider**
+7. **Utility Functions for Server Context and Dictionary Server-side**
+8. **Client-side Global State Dictionary and Locale Management Using Jotai**
+9. **Simple Examples of Dictionary Usage**
+    1. Server-Side Page or Layout Usage
+    2. Server-Side Children Component Usage
+    3. Client-Side Component Usage
+10. **Conclusion**
+
+---
+
+### Setting Up a Next.js 14 Project
+
+First, set up a new Next.js project and install the necessary dependencies.
+
+Ensure you have the latest version of Next.js and the required packages for i18n.
+
+This setup will provide the foundation for implementing internationalization in your application.
+
+**Install dependencies for this tutorial**
+
+- **[next-i18n-router](https://github.com/i18nexus/next-i18n-router)** - For integrating with Next middleware and managing user language preferences, cookies, language-based routes, etc.
+- **[jotai](https://github.com/pmndrs/jotai)** - For global state management (you can use [React Context](https://react.dev/reference/react/useContext) as an alternative)
+
+### Configuring Internationalization
+
+To configure i18n in your Next.js project, create an i18n configuration file.
+
+This file should specify the default language, supported locales, and any necessary settings for handling URL prefixes for different languages.
+
+This configuration ensures that your application can handle multiple languages and route users to the appropriate language version of your site.
+
+```tsx
+// ./i18nConfig.ts
+
+import type { Config } from 'next-i18n-router/dist/types';
+
+export const config: Config = {
+  defaultLocale: 'en',
+  // Check available options at: <https://www.w3schools.com/tags/ref_language_codes.asp>
+  locales: ['en', 'pt', 'es'],
+  noPrefix: true,
+} as const;
+
+export type Locale = (typeof config)['locales'][number];
+
+```
+
+### Enabling Client-side and Server-side Dictionary Access
+
+Internationalization requires loading language-specific dictionaries dynamically.
+
+Create a utility function to load dictionaries based on the user's locale.
+
+This function should fetch the appropriate JSON files containing translated strings for each supported language.
+
+```tsx
+// ./get-dictionary-by-locale.ts
+
+import { Locale } from './config';
+
+const dictionaries = {
+  en: () => import('./dictionaries/en.json').then((module) => module.default),
+  pt: () => import('./dictionaries/pt.json').then((module) => module.default),
+  es: () => import('./dictionaries/es.json').then((module) => module.default),
+};
+
+// Type for the dictionary
+export type Dictionary = Awaited<ReturnType<typeof dictionaries.en>> & {
+  [key: string]: string;
+  [key: `languages_${Locale}`]: string;
+};
+
+// Utility function to get dictionary by locale
+export const getDictionaryByLocale = async (locale: Locale): Promise<Dictionary> => {
+  const dictionary = await dictionaries[locale as keyof typeof dictionaries]();
+  // Using Proxy to handle missing translations
+  return new Proxy(dictionary, {
+    get(target, property) {
+      if (property in target) {
+        return target[property as keyof typeof target];
+      } else {
+        return `{{${property.toString()}}}`;
+      }
+    },
+  }) as Dictionary;
+};
+
+```
+
+> 👉🏻 Trying to access `dictionary.home_page_title` would result in `{{ home_page_title }}` being shown in the user interface, making it easier to notice if a dictionary key was not found or correctly loaded.
+> 
+
+### Integrating Middleware for Authentication (Optional)
+
+If your project uses authentication (e.g., with NextAuth), integrate i18n with the authentication middleware.
+
+The middleware should check if the user is authenticated and determine the appropriate language based on the user's preferences or settings.
+
+By combining authentication with i18n, you can ensure that users see the correct language version of your site as soon as they log in.
+
+If your project does not use NextAuth, you can integrate i18n with other middleware solutions.
+
+The goal is to ensure that the middleware can manage language routing based on user preferences or settings.
+
+This approach is flexible and can be adapted to various authentication and routing strategies.
+
+>  💡 Notice that in this tutorial, I chose not to use language explicitly in the routes by using the i18nRouter configuration `noPrefix: true`. If you need to have the current locale in the URL, set this to false but remember to handle all the authorization redirects including the locale prefix.
+
+### Using i18nRouter Middleware with NextAuth
+
+```tsx
+// Integrating with NextAuth middleware
+
+import { i18nRouter } from 'next-i18n-router';
+import type { NextAuthConfig, Session } from 'next-auth';
+
+export const authConfig = {
+  authorized({ auth, request }) {
+    const { nextUrl } = request;
+    const isLoggedIn = !!auth?.user;
+
+    if (!isLoggedIn) {
+      return false;
+    }
+
+    // Use i18nRouter from next-i18n-router to handle language routing
+    return i18nRouter(request, i18n);
+  },
+} satisfies NextAuthConfig;
+
+```
+
+### Using i18nRouter Middleware with Next.js Middleware
+
+```tsx
+// Integrating with Next.js middleware.ts directly
+
+import { i18nRouter } from 'next-i18n-router';
+import i18nConfig from './i18nConfig';
+
+export function middleware(request) {
+  // Use i18nRouter from next-i18n-router to handle language routing
+  return i18nRouter(request, i18nConfig);
+}
+
+// only apply this middleware to files in the app directory
+export const config = {
+  matcher: '/((?!api|static|.*\\\\..*|_next).*)'
+};
+
+```
+
+### Creating a Language Switcher
+
+Create a language switcher component that allows users to change the language dynamically.
+
+This component should list all available languages and update the URL to reflect the selected language.
+
+When a user selects a language, the application should reload with the content displayed in the chosen language.
+
+### Dictionary in English Language Example
+
+```json
+// dictionaries/en.json
+
+{
+  "languages_en": "English",
+  "languages_pt": "Portuguese",
+  "languages_es": "Spanish"
+}
+
+```
+
+### Language Switcher Server-side Component
+
+```tsx
+// language-page.tsx
+
+import { cookies } from 'next/headers';
+import { LanguageForm } from './language-form';
+import { setDictionary } from './dictionary-server-side';
+
+export default async function LanguagePage({
+  params: { locale }
+}: {
+  params: { locale: Locale }
+}) {
+  const dictionary = await getDictionaryByLocale(locale);
+  setDictionary(dictionary);
+
+  const languages = i18n.locales.map((locale) => ({
+    label: dictionary[`languages_${locale}`],
+    code: locale,
+  }));
+
+  async function updateLanguage(locale: Locale) {
+    'use server';
+    const cookieStore = cookies();
+    cookieStore.set('NEXT_LOCALE', locale);
+  }
+
+  return (
+    <LanguageForm
+      languages={languages}
+      updateLanguage={updateLanguage}
+    />
+  );
+}
+
+```
+
+### Language Switcher Client-side Component
+
+```tsx
+// language-form.tsx
+
+'use client'
+
+import { Locale } from './i18nConfig';
+import { localeAtom, useDictionary } from './dictionary';
+import { useAtomValue } from 'jotai';
+
+interface LanguageFormProps {
+  languages: { code: Locale; label: string }[];
+  updateLanguage(locale: Locale): Promise<void>;
+}
+
+export function LanguageForm({
+  languages,
+  updateLanguage,
+}: LanguageFormProps) {
+  const currentLocale = useAtomValue(localeAtom); // Get current locale from Jotai
+  const dictionary = useDictionary(); // Get current dictionary from Jotai
+
+  async function handleSaveLanguage({ locale }) {
+    await updateLanguage(locale);
+    window.location.reload();
+  }
+
+  return (
+    // UI elements for language switching
+  );
+}
+
+```
+
+### Wrapping Providers with DictionaryProvider
+
+To manage language settings and translations effectively, wrap your other providers with a `DictionaryProvider`.
+
+This provider should set the dictionary based on the current locale and ensure that translations are available throughout the application.
+
+By doing so, you centralize language management and make it easier to maintain and update translations.
+
+### Creating a Dictionary Provider
+
+```tsx
+// dictionary-provider.tsx
+
+import { ReactNode } from 'react';
+import { useSetAtom, useAtom } from 'jotai';
+import { localeAtom, dictionaryAtom } from './dictionary';
+
+export function DictionaryProvider({
+  children,
+  locale,
+}: {
+  children: ReactNode;
+  locale: Locale;
+}) {
+  const setLocale = useSetAtom(localeAtom); // Set current locale in Jotai
+  setLocale(locale);
+  useAtom(dictionaryAtom); // Load and set current dictionary in Jotai
+
+  return <>{children}</>;
+}
+
+```
+
+### Using Dictionary Provider with Other Providers
+
+```tsx
+// root-layout.tsx
+
+import { setDictionary, setLocale } from './dictionary-server-side';
+
+export default async function RootLayout({
+  children,
+  params: { locale }
+}: {
+  children: ReactNode;
+  params: { locale: Locale };
+}) {
+  const dictionary = await getDictionaryByLocale(locale); // Load dictionary
+
+ from JSON files
+  setLocale(locale); // Set locale in server-side context
+  setDictionary(dictionary); // Set dictionary in server-side context
+
+  return (
+    <html lang={locale}>
+      <body className="antialiased">
+        <Providers locale={locale}>
+          {children}
+        </Providers>
+      </body>
+    </html>
+  );
+}
+
+```
+
+### Utility Functions for Server Context and Dictionary Server-side
+
+Managing the server-side context and dictionary is crucial for providing consistent language support throughout your application.
+
+You need utility functions that handle setting and getting the locale and dictionary in a server context.
+
+1. **Server Context Utility**: Create a utility to manage server-side context values.
+
+This utility should provide functions to get and set values, ensuring that your application can store and retrieve the current locale and dictionary efficiently.
+
+1. **Dictionary Server-side Utility**: Develop a utility that uses the server context to manage the dictionary.
+
+This utility should set the dictionary based on the locale and provide the necessary translations for the server-side rendering of your application.
+
+By managing the dictionary server-side, you ensure that all parts of your application have access to the correct translations based on the user's locale.
+
+### Server Context Utility
+
+```tsx
+// server-context.ts
+
+import { cache } from 'react';
+
+// Utility to manage server-side context values
+export const serverContext = <T>(defaultValue: T): [() => T, (v: T) => void] => {
+  const getRef = cache(() => ({ current: defaultValue }));
+
+  const getValue = (): T => getRef().current;
+
+  const setValue = (value: T) => {
+    getRef().current = value;
+  };
+
+  return [getValue, setValue];
+};
+
+```
+
+### Dictionary Server-side Utility
+
+```tsx
+// dictionary-server-side.ts
+
+import { Dictionary, i18n } from './i18nConfig';
+import { serverContext } from './server-context';
+
+// Create server-side context for locale and dictionary
+export const [getLocale, setLocale] = serverContext(i18n.defaultLocale);
+export const [getDictionary, setDictionary] = serverContext({} as Dictionary);
+
+```
+
+### Client-side Global State Dictionary and Locale Management Using Jotai
+
+For client-side state management, using a state management library like Jotai can help manage the dictionary and locale efficiently.
+
+1. **Locale Atom**: Create an atom to store the current locale.
+
+This atom will hold the default locale initially and update as the user changes the language.
+
+1. **Dictionary Atom**: Create an atom that fetches and stores the dictionary based on the current locale.
+
+This atom should dynamically load the appropriate dictionary when the locale changes, ensuring that the application always displays the correct translations.
+
+1. **useDictionary Hook**: Develop a custom hook to access the current dictionary.
+
+This hook will use the dictionary atom to provide the necessary translations for components, making it easy to retrieve translated strings throughout your application.
+
+### Jotai Dictionary and Locale Global Hook States
+
+```tsx
+// dictionary.ts
+
+import { getDictionaryByLocale, i18n, Locale } from './i18nConfig';
+import { atom, useAtomValue } from 'jotai';
+
+// Atom to store current locale
+export const localeAtom = atom<Locale>(i18n.defaultLocale);
+
+// Atom to fetch and store current dictionary
+export const dictionaryAtom = atom((get) => getDictionaryByLocale(get(localeAtom)));
+
+// Hook to access current dictionary
+export const useDictionary = () => {
+  return useAtomValue(dictionaryAtom);
+};
+
+```
+
+By managing the dictionary and locale with Jotai, you create a centralized and reactive system for handling internationalization on the client side.
+
+This approach ensures that your application can respond to language changes dynamically and provide a seamless user experience.
+
+### Simple Examples of i18n Dictionary Usage
+
+Here are three simple examples to illustrate how to use the dictionary in different parts of your Next.js application.
+
+### 1. Server-Side Page or Layout Usage
+
+When using `getDictionaryByLocale(locale)` and `setDictionary(dictionary)` in server-side pages or layouts, it's essential to call `setDictionary` to ensure that the dictionary is available to all child components. 
+
+
+>  💡 This `setDictionary` is necessary because the React cache function won't propagate the data otherwise. While this approach requires explicitly setting the dictionary, it avoids the need for props drilling.
+
+```tsx
+// pages/index.tsx
+
+import { getDictionaryByLocale, setDictionary } from './dictionary-server-side';
+
+export default async function HomePage({ params: { locale } }) {
+  // Get the dictionary based on the locale
+  const dictionary = await getDictionaryByLocale(locale);
+
+  // Set the dictionary in the server-side context
+  setDictionary(dictionary);
+
+  return (
+    <div>
+      <h1>{dictionary.home_page_title}</h1>
+      <p>{dictionary.home_page_description}</p>
+      <SomeChildComponent />
+    </div>
+  );
+}
+
+```
+
+### 2. Server-Side Children Component Usage
+
+Child components that need to access the dictionary server-side should use `getDictionary()` to retrieve the current dictionary.
+
+```tsx
+// components/some-child-component.tsx
+
+import { getDictionary } from './dictionary-server-side';
+
+export default function SomeChildComponent() {
+  // Get the current dictionary
+  const dictionary = getDictionary();
+
+  return (
+    <div>
+      <h2>{dictionary.child_component_title}</h2>
+      <p>{dictionary.child_component_description}</p>
+    </div>
+  );
+}
+
+```
+
+### 3. Client-Side Component Usage
+
+Client-side components can use the `useDictionary()` hook from Jotai to access the current dictionary.
+
+```tsx
+// components/client-component.tsx
+
+'use client';
+
+import { useDictionary } from './dictionary';
+
+export default function ClientComponent() {
+  // Use the dictionary hook to get the current dictionary
+  const dictionary = useDictionary();
+
+  return (
+    <div>
+      <h2>{dictionary.client_component_title}</h2>
+      <p>{dictionary.client_component_description}</p>
+    </div>
+  );
+}
+
+```
+
+By following these examples, you can effectively manage and utilize dictionaries in your Next.js application, ensuring that translations are properly loaded and available to both server-side and client-side components.
+
+### Conclusion
+
+Implementing internationalization in Next.js 14 using the App Router and enabling both client-side and server-side dictionary access enhances the user experience by making your application accessible to a global audience.
+
+By integrating middleware for secure routing (if necessary) and creating a dynamic language switcher, you provide a seamless multilingual experience for your users.
+
+Additionally, using utility functions for server context and dictionary management, combined with Jotai for client-side state management, ensures that your Next.js 14 application is well-equipped to handle internationalization effectively.
