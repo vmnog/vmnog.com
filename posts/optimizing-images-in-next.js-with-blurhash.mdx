@@ -1,0 +1,318 @@
+---
+title: Optimizing Images in Next.js with BlurHash and Skeleton Loading
+description: Enhance user experience by implementing image optimization with BlurHash and skeleton loaders in Next.js. This guide walks you through the steps of building a highly optimized image component, improving perceived performance and visual appeal.
+date: 2024-05-26
+---
+
+<Image
+  alt={`Optimizing Images in Next.js with BlurHash`}
+  src={`/images/post-banner-blurhash.png`}
+  width={800}
+  height={600}
+  blurHash={`L15#qmRk4Ut7_2xubHog00xu-:t6`}
+/>
+
+Optimizing images is crucial for improving the user experience on web applications. On my personal blog, [vmnog.com](https://vmnog.com), I implemented image optimization techniques to ensure a seamless and visually appealing experience for users. In this article, I’ll guide you through the process of optimizing images in Next.js using BlurHash and skeleton loaders.
+
+### The Problem
+
+When loading images on a web page, users often experience a flash of blank space before the image loads. This can be jarring and negatively impact the user experience, especially on slower connections. We aim to solve this by providing placeholders that improve the perceived performance of the site.
+
+### Initial Setup
+
+First, set up a new Next.js project and install the necessary dependencies.
+
+```bash
+npx create-next-app@latest my-next-app
+cd my-next-app
+npm install blurhash
+```
+
+### Step 1: Using the Next.js Image Component
+
+Next.js provides an optimized Image component out of the box, which offers better performance compared to a standard `<img>` tag.
+
+**Example:**
+
+```jsx
+import Image from 'next/image';
+
+const BasicImage = () => (
+  <Image
+    src="/images/example.jpg"
+    alt="Example Image"
+    width={800}
+    height={600}
+  />
+);
+
+export default BasicImage;
+```
+
+Using the Next.js Image component provides benefits like automatic resizing, lazy loading, and better performance. However, we can enhance this further by providing visual placeholders.
+
+### Step 2: Generating BlurHash Strings
+
+To provide a visual placeholder while the image loads, we use BlurHash. BlurHash generates a blurred, low-resolution placeholder for your images.
+
+You can generate BlurHash strings using the [BlurHash website](https://blurha.sh) by uploading your images and saving the generated hashes to your database.
+
+Alternatively, you can generate BlurHash strings locally using Node.js. Here’s a script to do that:
+
+**blurhash.js:**
+
+```js
+const { encode } = require('blurhash');
+const { createCanvas, loadImage } = require('canvas');
+
+async function getBlurHashFromImage(imagePath) {
+  const image = await loadImage(imagePath);
+  const canvas = createCanvas(image.width, image.height);
+  const context = canvas.getContext('2d');
+  context.drawImage(image, 0, 0);
+  const imageData = context.getImageData(0, 0, image.width, image.height);
+  return encode(imageData.data, imageData.width, imageData.height, 4, 4);
+}
+
+getBlurHashFromImage('path/to/your/image.jpg').then(console.log);
+```
+
+You can run this script using the following command to get the BlurHash in the terminal:
+
+```bash
+node ./blurhash.js
+```
+
+Save the generated BlurHash string for each image in your database or alongside your image metadata.
+
+### Step 3: Creating an Optimized Image Component with BlurHash
+
+Now, let's create a component that uses the BlurHash string as a placeholder.
+
+**Add the BlurHash Placeholder:**
+
+```jsx
+import { Blurhash } from "react-blurhash";
+import { useState } from 'react';
+import Image from 'next/image';
+
+const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <div style={{ position: 'relative', width, height }}>
+      {!isLoaded && (
+        <Blurhash
+          hash={blurHash} 
+          width="100%" 
+          height="100%" 
+          resolutionX={32} 
+          resolutionY={32} 
+          punch={1} 
+          style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover' }}
+        />
+      )}
+      <Image
+        src={src} 
+        alt={alt} 
+        width={width} 
+        height={height} 
+        onLoadingComplete={() => setIsLoaded(true)} 
+        style={{
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover', 
+          visibility: isLoaded ? 'visible' : 'hidden', 
+          opacity: isLoaded ? 1 : 0,
+        }}
+        loading="lazy" 
+      />
+    </div>
+  );
+};
+
+export default OptimizedImage;
+```
+
+In this step, we use the BlurHash string as a placeholder while the image is loading. Once the image is loaded, we update the state to show the image and hide the BlurHash.
+
+### Step 4: Adding Skeleton Loading
+
+To enhance the user experience further, we can add a skeleton loader that displays until the BlurHash placeholder is ready.
+
+> First make sure you have shadcn-ui dependencie installed on your Next.js project, if you don't have it please follow documentation instructions for a detailed guide: [shadcn/ui installation guide](https://ui.shadcn.com/docs/installation/next)
+
+**Install the shadcn/ui Skeleton Component:**
+
+```bash
+npx shadcn-ui@latest add skeleton
+```
+
+**Using the Skeleton Component:**
+
+Update the `OptimizedImage` component to include the skeleton loader:
+
+```jsx
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Add the skeleton loader
+const OptimizedImage = ({ src, alt, width, height, blurHash, className }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isHashLoaded, setIsHashLoaded] = useState(false); // Add this state
+
+  return (
+    <div className={`relative ${className}`} style={{ width, height, borderRadius: 'inherit', overflow: 'hidden' }}>
+      {!isHashLoaded && (
+        <Skeleton className="absolute top-0 left-0 w-full h-full" style={{ borderRadius: 'inherit' }} />
+      )}
+      {!isLoaded && blurHash && (
+        <Blurhash
+          hash={blurHash}
+          width="100%"
+          height="100%"
+          resolutionX={32}
+          resolutionY={32}
+          punch={1}
+          style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover', borderRadius: 'inherit' }}
+          onLoad={() => setIsHashLoaded(true)} // Set the state when BlurHash is loaded
+        />
+      )}
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        onLoadingComplete={() => setIsLoaded(true)} // Set the state when the image is loaded
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          visibility: isLoaded ? 'visible' : 'hidden',
+          opacity: isLoaded ? 1 : 0,
+          borderRadius: 'inherit'
+        }}
+        loading="lazy"
+      />
+    </div>
+  );
+};
+```
+
+### Step 5: Adding a Delay for Smooth Transition (Optional)
+
+To make the transition from the BlurHash to the actual image smoother, you can add a delay. This ensures that the BlurHash is visible for a short duration, providing a smoother user experience.
+
+**Adding a Delay:**
+
+```jsx
+import { useEffect } from 'react';
+
+// Add a delay to smooth the transition from the BlurHash to the actual image
+useEffect(() => {
+  let timer;
+  if (isHashLoaded) {
+    timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 500); // Adjust the delay duration as needed (e.g., 500ms)
+  }
+  return () => clearTimeout(timer);
+}, [isHashLoaded]);
+```
+
+### Final Result: Full Component Code
+
+Combining all the steps, here is the full `OptimizedImage` component:
+
+```jsx
+'use client';
+
+import { Blurhash } from "react-blurhash";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { Skeleton } from "@/components/ui/skeleton";
+
+const OptimizedImage = ({ src, alt, width, height, blurHash, className }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isHashLoaded, setIsHashLoaded] = useState(false);
+
+  // Check if the image is already loaded from the cache
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = src;
+    if (img.complete) {
+      setIsLoaded(true);
+    }
+  }, [src]);
+
+  // Add a delay to the transition
+  useEffect(() => {
+    let timer;
+    if (isHashLoaded) {
+      timer = setTimeout(() => {
+        setIsLoaded(true);
+      }, 500); // Adjust the delay duration as needed (e.g., 500ms)
+    }
+    return () => clearTimeout(timer);
+  }, [isHashLoaded]);
+
+  const handleImageLoad = () => {
+    setIsHashLoaded(true);
+  };
+
+  return (
+    <div className={`relative ${className}`} style={{ width, height, borderRadius: 'inherit', overflow: 'hidden' }}>
+      {!isHashLoaded && (
+        <Skeleton className="absolute top-0 left-0 w-full h-full
+
+" style={{ borderRadius: 'inherit' }} />
+      )}
+      {!isLoaded && blurHash && (
+        <Blurhash
+          hash={blurHash} 
+          width="100%" 
+          height="100%" 
+          resolutionX={32} 
+          resolutionY={32} 
+          punch={1} 
+          style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover', borderRadius: 'inherit' }}
+        />
+      )}
+      <Image
+        src={src} 
+        alt={alt} 
+        width={width} 
+        height={height} 
+        onLoadingComplete={() => setIsLoaded(true)} 
+        onLoad={handleImageLoad}
+        style={{
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover', 
+          visibility: isLoaded ? 'visible' : 'hidden', 
+          opacity: isLoaded ? 1 : 0, 
+          borderRadius: 'inherit'
+        }}
+        loading="lazy" 
+      />
+    </div>
+  );
+};
+
+export default OptimizedImage;
+```
+
+### Conclusion
+
+By following these steps, you have successfully created an optimized image component in Next.js using BlurHash and skeleton loaders. This approach improves the perceived performance and visual appeal of your website. On my blog, [vmnog.com](https://vmnog.com), I’ve implemented these techniques to ensure a smooth and engaging user experience.
+
+Implementing these optimizations ensures that your Next.js application handles images efficiently, providing a seamless and visually appealing experience for users.
+
