@@ -1,10 +1,10 @@
+import OptimizedImage from '@/components/optimized-image'
 import { WEBSITE_HOST_URL } from '@/lib/constants'
 import { allPosts } from 'contentlayer/generated'
 import { format, parseISO } from 'date-fns'
 import type { MDXComponents } from 'mdx/types'
 import type { Metadata } from 'next'
 import { useMDXComponent } from 'next-contentlayer/hooks'
-import NextImage from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
@@ -50,7 +50,7 @@ export async function generateMetadata({
 // Define your custom MDX components.
 const mdxComponents: MDXComponents = {
   a: ({ href, children }) => <Link href={href as string}>{children}</Link>,
-  Image: (props) => <NextImage className="rounded-lg" {...props} />,
+  Image: (props) => <OptimizedImage className="rounded-lg" {...props} />,
 }
 
 const PostLayout = ({ params }: { params: { slug: string } }) => {
