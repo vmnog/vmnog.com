@@ -57,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${spaceMono.className}`}>
+    <html lang="en" suppressHydrationWarning className={`${spaceMono.className}`}>
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark">
           <header className="py-4">
