@@ -1,0 +1,260 @@
+---
+title: The Easiest way to send Emails with only Next.js (no backend required)
+description: In this article, we will craft an optimized developer experience for capturing and sending emails, utilizing cutting-edge technologies such as Next.js for server-side rendering, Resend API for managing email transactions, and React-Email to design and create email templates.
+date: 2024-05-28
+---
+
+<Image
+  alt={`The Easiest way to send Emails with only Next.js (no backend required)`}
+  src={`/images/post-banner-sending-emails-with-nextjs-resend-react-email.png`}
+  width={800}
+  height={600}
+  blurHash={`L25#naM|00xtpvRkVEt601t6_KRk`}
+/>
+
+In this article, we will craft an optimized developer experience for capturing and sending emails, utilizing cutting-edge technologies such as Next.js for server-side rendering, Resend API for managing email transactions, and React-Email to design and create email templates.
+
+When we are building or selling a product, it's crucial to communicate with interested individuals. The most common way to achieve this is by collecting emails.
+
+After collecting the email addresses of our potential clients, we can send them email messages welcoming them to our list and later send updates or action emails to keep them informed about what is happening with their accounts.
+
+## By the end of this tutorial, you will have an application with these features:
+
+1. **A component where users can input their email**
+2. **Store emails in a database list accessible via endpoints**
+3. **Send emails using Next.js Server Actions**
+4. **Using React JSX components to build your email templates**
+
+> 💡 This article was written while I was working on the open-source project [caraquecoda.com.br](https://www.caraquecoda.com.br/). The insights and techniques shared here are based on my experience and contributions to this project, aimed at enabling sending emails in Next.js applications.
+
+
+### Table of Contents
+1. **Setting Up a Next.js 14 Project**
+2. **Set Up Your Environment Variables Locally**
+3. **Build a JSX Email Template**
+4. **Create an HTTP Serverless Endpoint Using Next.js Server Actions**
+5. **Create a Client Component to Capture the Email**
+6. **Conclusion**
+
+---
+
+### Setting Up a Next.js 14 Project
+
+First, set up a new Next.js project and install the necessary dependencies.
+
+You can follow this tutorial for this step: [Next.js Docs: Installation](https://nextjs.org/docs/getting-started/installation)
+
+**We are going to use these dependencies, check their documentation for installation guide.**
+
+- **resend:** [https://resend.com/](https://resend.com/docs/send-with-nextjs)
+- **react-email:** [https://react.email/](https://react.email/docs/getting-started/manual-setup)
+
+After the **resend** and **react-email** setup, you’ll be able to continue to the following steps. Just make sure you have your [Resend API Keys](https://resend.com/api-keys) before continuing.
+
+### Set Up Your Environment Variables Locally
+
+Create a `.env` file and add two keys (could be just one, but I like having one for each environment so we can filter by API Key in Resend app)
+
+Create two API keys in [Resend](https://resend.com/api-keys) and paste them here:
+
+```bash
+# .env
+
+RESEND_API_KEY_DEV={{YOUR_DEV_API_KEY}}
+RESEND_API_KEY_PROD={{YOUR_PROD_API_KEY}}
+```
+
+In Next.js, every time you insert a new variable in `.env`, you need to update your `next.config.mjs`
+
+```jsx
+// next.config.mjs
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  env: {
+    RESEND_API_KEY_DEV: process.env.RESEND_API_KEY_DEV,
+    RESEND_API_KEY_PROD: process.env.RESEND_API_KEY_PROD,
+  }
+};
+
+export default nextConfig;
+```
+
+If your app is deployed somewhere like [Vercel](https://vercel.com/), remember to set up the environment variables in your settings; otherwise, your app **will not be able to send emails.**
+
+> 👀 In case you don’t know where your environment variables are: **`https://vercel.com/{{your-user}}/{{your-project}}/settings/environment-variables`**
+
+### Build a JSX Email Template
+
+In your components directory, create a `.jsx` or `.tsx` (for TypeScript) file that will be used to send the emails.
+
+**Good to know:**
+
+- You can use one of [react-email templates](https://demo.react.email/preview/notifications/vercel-invite-user) to start building yours.
+- Also, check their [components library](https://react.email/docs/introduction#components) before starting development.
+
+```jsx
+// @/components/emails/email-welcome.tsx
+
+import { Body, Html, Text } from "@react-email/components";
+import * as React from "react";
+
+interface WelcomeEmailProps {
+  email: string;
+}
+
+export const WelcomeEmail = ({ email }: WelcomeEmailProps) => (
+  <Html>
+    <Body>
+      <Text>Welcome!</Text>
+      <Text>Your registered email is: {email}</Text>
+    </Body>
+  </Html>
+);
+
+export default WelcomeEmail;
+```
+
+### Create an HTTP Serverless Endpoint Using Next.js Server Actions
+
+This endpoint will optionally receive the user email and use Resend to send the email to their server database.
+
+```jsx
+// @/app/api/subscribe/email/route.ts
+import { WelcomeEmail } from '@/components/emails/email-welcome';
+import { Resend } from 'resend';
+
+const resendApiKey = process.env.NODE_ENV === 'development' 
+ ? process.env.RESEND_API_KEY_DEV
+ : process.env.RESEND_API_KEY_PROD
+
+const resend = new Resend(resendApiKey);
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { to } = body;
+
+    if (!to) {
+      return new Response('Email address is required', { status: 400 });
+    }
+    
+    // This is required to use while developing
+    const resendDevelopmentEmail = 'onboarding@resend.dev' 
+
+    // To enable your email to work in production check https://resend.com/domains
+    // This email doesn't need to exist,
+    // but you need to own the domain to configure the DNS settings
+    const myEmail = 'johndoe@your-domain.com' // Substitute this with your email
+    
+    const from = process.env.NODE_ENV === 'development' ? resendDevelopmentEmail : myEmail
+
+    const response = await resend.emails.send({
+      from: `John Doe <${from}>`,
+      to,
+      subject: 'Welcome!',
+      react: WelcomeEmail({ email: to }),
+    });
+
+    // Sometimes the resend function may succeed but email was not sent
+    if (response.error) {
+      console.error(response.error?.message)
+      return new Response('Failed to send email', { status: 500 });
+    }
+
+    return new Response('Email sent successfully!', { status: 200 });
+  } catch (error) {
+    // Sometimes the resend function may fail
+    console.error('Error sending email:', error);
+    return new Response('Failed to send email', { status: 500 });
+  }
+}
+```
+
+### Create a Client Component to Capture the Email
+
+This component will feature a form with an email input field, and upon submission, it will send a request to the server endpoint we previously created to send the welcome email.
+
+```jsx
+// @/components/subscribe.tsx
+
+'use client'
+
+import { FormEvent, useState } from "react";
+
+export default function Subscribe() {
+  const [email, setEmail] = useState('');
+  const [wasEmailSent, setEmailWasSent] = useState(false);
+
+  // Function to handle the form submission
+  async function handleSubmitEmail(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!email) return; // If no email is provided, exit the function
+
+    // Optimistic UI concept
+    // See https://javascript.plainenglish.io/what-is-optimistic-ui-656b9d6e187c
+    setEmailWasSent(true); 
+
+    try {
+      // Make a POST request to the email endpoint
+      // Remember that this should correspond to your folder structure
+      // My route.ts is at /app/api/subscribe/email/route.ts 
+      // So Next.js exposes the endpoint at the URL below
+      await fetch('/api/subscribe/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Send the email as JSON in the request body
+        // This will be received as the WelcomeEmail component props
+        body: JSON.stringify({ to: email }),
+      });
+    } catch (error) {
+      console.error('Error fetching email:', error);
+    }
+  }
+
+  return (
+    <section>
+      {/* Form to capture the user's email */}
+      <form onSubmit={handleSubmitEmail}>
+        {/* Email input field */}
+        <input
+          id="email"
+          name="email"
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          disabled={wasEmailSent} // Disable the input if the email was sent
+          placeholder="Your best email..."
+          aria-label="Your best email..."
+        />
+        {/* Submit button */}
+        <button disabled={wasEmailSent || !email} type="submit">
+          Sign Up
+        </button>
+        {/* Success message displayed after email is sent */}
+        {wasEmailSent && <p>Wait, we will contact you soon!</p>}
+      </form>
+    </section>
+  );
+}
+```
+
+**🥳🎉 And there you have it** - you've now successfully set up an application that can collect emails and send them using Next.js Server Actions.
+
+You can verify the emails you've sent by visiting [Resend Emails](https://resend.com/emails). This will provide you with a comprehensive list of all the emails that have been sent from your application.
+
+<Image
+  alt={`Gif of Leonardo di Caprio Congratulationing you because you are awesome!`}
+  src={`https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2Zlam1jbmllNGwwemkzNms5MHJ0azNkY2Rxdm55bjltZjkxbml2eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/BPJmthQ3YRwD6QqcVD/giphy.webp`}
+  width={800}
+  height={600}
+  blurHash={`L6B3mMEMCk-;~CWBlTo#9ZnPw|xu`}
+/>
+
+
+## Conclusion
+
+You've now successfully set up an application that collects emails and sends them using Next.js Server Actions.
+
+This not only simplifies the process of sending emails but also removes the need for a separate backend service to handle email communications.

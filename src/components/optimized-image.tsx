@@ -14,7 +14,7 @@ const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
     if (isHashLoaded) {
       const timer = setTimeout(() => {
         setShowImage(true);
-      }, 500);
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [isHashLoaded]);
@@ -23,7 +23,7 @@ const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
     if (isLoaded) {
       const timer = setTimeout(() => {
         setIsHashLoaded(true);
-      }, 500);
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [isLoaded]);
