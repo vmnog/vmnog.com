@@ -287,6 +287,26 @@ const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
 export default OptimizedImage;
 ```
 
+### Utilizing the `OptimizedImage` Component in Other Components/Pages
+
+The `OptimizedImage` component can be easily integrated into any of your Next.js components or pages to enhance the user experience with optimized image loading. Here are a few examples of how to use the `OptimizedImage` component in different contexts within your application.
+
+```jsx
+import OptimizedImage from '@/components/OptimizedImage';
+
+// More code ...
+
+<OptimizedImage
+  src={post.coverImage}
+  alt={post.title}
+  width={800}
+  height={600}
+  blurHash={post.coverImageBlurHash}
+/>
+
+// More code ...
+```
+
 ### Conclusion
 
 By following these steps, you have successfully created an optimized image component in Next.js using BlurHash and skeleton loaders. This approach improves the perceived performance and visual appeal of your website. On my blog, [vmnog.com](https://vmnog.com), I’ve implemented these techniques to ensure a smooth and engaging user experience.
