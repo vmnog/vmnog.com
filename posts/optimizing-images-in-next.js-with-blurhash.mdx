@@ -95,6 +95,131 @@ Now, let's create a component that uses the BlurHash string as a placeholder.
 'use client';
 
 import { Blurhash } from "react-blurhash";
+import Image from 'next/image';
+
+const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <div>
+        {!isLoaded && (
+          <Blurhash
+            hash={blurHash}
+            width={width}
+            height={height}
+            resolutionX={32}
+            resolutionY={32}
+            punch={1}
+          />
+        )}
+
+        <Image
+          src={src}
+          alt={alt}
+          width={width}
+          height={height}
+          onLoadingComplete={() => setIsLoaded(true)}
+        />
+    </div>
+  );
+};
+
+export default OptimizedImage;
+```
+
+In this step, we use the BlurHash string as a placeholder while the image is loading. Once the image is loaded, we update the state to show the image and hide the BlurHash.
+
+### Step 4: Adding Skeleton Loading
+
+To enhance the user experience further, we can add a skeleton loader that displays until the BlurHash placeholder is ready.
+
+> First make sure you have shadcn-ui dependencie installed on your Next.js project, if you don't have it please follow documentation instructions for a detailed guide: [shadcn/ui installation guide](https://ui.shadcn.com/docs/installation/next)
+
+**Install the shadcn/ui Skeleton Component:**
+
+```bash
+npx shadcn-ui@latest add skeleton
+```
+
+**Using the Skeleton Component:**
+
+Update the `OptimizedImage` component to include the skeleton loader:
+
+```jsx
+'use client';
+
+import { Blurhash } from "react-blurhash";
+import Image from 'next/image';
+
+const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <div>
+        {!isHashLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
+        )}
+
+        {!isLoaded && !isHashLoaded && (
+        <Blurhash
+          {/* More code... */}
+          onLoad={() => setIsHashLoaded(true)}
+        />
+
+        {/* More code... */}
+    </div>
+  );
+};
+
+export default OptimizedImage;
+```
+
+### Step 5: Adding a Delay for Smooth Transition (Optional)
+
+To make the transition from the BlurHash to the actual image smoother, you can add a delay. This ensures that the BlurHash is visible for a short duration, providing a smoother user experience.
+
+**Adding a Delay:**
+
+```jsx
+import { useEffect } from 'react';
+
+const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isHashLoaded, setIsHashLoaded] = useState(false);
+  const [showImage, setShowImage] = useState(false);
+
+  // Add a delay to smooth the transition from the BlurHash to the actual image
+  useEffect(() => {
+    if (isHashLoaded) {
+      const timer = setTimeout(() => {
+        setShowImage(true);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isHashLoaded]);
+
+  // Add a delay to smooth the transition from the Skeleton to the Blurhash
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => {
+        setIsHashLoaded(true);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded]);
+
+  // More code below...
+```
+
+### Final Result: Full Component Code
+Add some inline style to make the `Image`, `Skeleton` and `Blurhash` component be located at the same place on the screen. Start copying the styling used below and change it as you need.
+
+Combining all the steps, here is the full `OptimizedImage` component:
+
+```jsx
+'use client';
+
+import { Blurhash } from "react-blurhash";
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Skeleton } from "./ui/skeleton";
@@ -155,209 +280,6 @@ const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
           }}
         />
       </div>
-    </div>
-  );
-};
-
-export default OptimizedImage;
-```
-
-In this step, we use the BlurHash string as a placeholder while the image is loading. Once the image is loaded, we update the state to show the image and hide the BlurHash.
-
-### Step 4: Adding Skeleton Loading
-
-To enhance the user experience further, we can add a skeleton loader that displays until the BlurHash placeholder is ready.
-
-> First make sure you have shadcn-ui dependencie installed on your Next.js project, if you don't have it please follow documentation instructions for a detailed guide: [shadcn/ui installation guide](https://ui.shadcn.com/docs/installation/next)
-
-**Install the shadcn/ui Skeleton Component:**
-
-```bash
-npx shadcn-ui@latest add skeleton
-```
-
-**Using the Skeleton Component:**
-
-Update the `OptimizedImage` component to include the skeleton loader:
-
-```jsx
-'use client';
-
-import { Blurhash } from "react-blurhash";
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Skeleton } from "@/components/ui/skeleton";
-
-const OptimizedImage = ({ src, alt, width, height, blurHash, className }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isHashLoaded, setIsHashLoaded] = useState(false);
-
-  // Check if the image is already loaded from the cache
-  useEffect(() => {
-    const img = new window.Image();
-    img.src = src;
-    if (img.complete) {
-      setIsLoaded(true);
-    }
-  }, [src]);
-
-  // Add a delay to the transition
-  useEffect(() => {
-    let timer;
-    if (isHashLoaded) {
-      timer = setTimeout(() => {
-        setIsLoaded(true);
-      }, 500); // Adjust the delay duration as needed (e.g., 500ms)
-    }
-    return () => clearTimeout(timer);
-  }, [isHashLoaded]);
-
-  const handleImageLoad = () => {
-    setIsHashLoaded(true);
-  };
-
-  return (
-    <div className={`relative ${className}`} style={{ width, height, borderRadius: 'inherit', overflow: 'hidden' }}>
-      {!isHashLoaded && (
-        <Skeleton className="absolute top-0 left-0 w-full h-full" style={{ borderRadius: 'inherit' }} />
-      )}
-      {!isLoaded && blurHash && (
-        <Blurhash
-          hash={blurHash}
-          width="100%"
-          height="100%"
-          resolutionX={32}
-          resolutionY={32}
-          punch={1}
-          style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover', borderRadius: 'inherit' }}
-        />
-      )}
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        onLoadingComplete={() => setIsLoaded(true)}
-        onLoad={handleImageLoad}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          visibility: isLoaded ? 'visible' : 'hidden',
-          opacity: isLoaded ? 1 : 0,
-          borderRadius: 'inherit'
-        }}
-        loading="lazy"
-      />
-    </div>
-  );
-};
-
-export default OptimizedImage;
-```
-
-### Step 5: Adding a Delay for Smooth Transition (Optional)
-
-To make the transition from the BlurHash to the actual image smoother, you can add a delay. This ensures that the BlurHash is visible for a short duration, providing a smoother user experience.
-
-**Adding a Delay:**
-
-```jsx
-import { useEffect } from 'react';
-
-// Add a delay to smooth the transition from the BlurHash to the actual image
-useEffect(() => {
-  let timer;
-  if (isHashLoaded) {
-    timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 500); // Adjust the delay duration as needed (e.g., 500ms)
-  }
-  return () => clearTimeout(timer);
-}, [isHashLoaded]);
-```
-
-### Final Result: Full Component Code
-
-Combining all the steps, here is the full `OptimizedImage` component:
-
-```jsx
-'use client';
-
-import { Blurhash } from "react-blurhash";
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Skeleton } from "@/components/ui/skeleton";
-
-const OptimizedImage = ({ src, alt, width, height, blurHash, className }) => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isHashLoaded, setIsHashLoaded] = useState(false);
-
-  // Check if the image is already loaded from the cache
-  useEffect(() => {
-    const img = new window.Image();
-    img.src = src;
-    if (img.complete) {
-      setIsLoaded(true);
-    }
-  }, [src]);
-
-  // Add a delay to the transition
-  useEffect(() => {
-    let timer;
-    if (isHashLoaded) {
-      timer = setTimeout(() => {
-        setIsLoaded(true);
-      }, 500); // Adjust the delay duration as needed (e.g., 500ms)
-    }
-    return () => clearTimeout(timer);
-  }, [isHashLoaded]);
-
-  const handleImageLoad = () => {
-    setIsHashLoaded(true);
-  };
-
-  return (
-    <div className={`relative ${className}`} style={{ width, height, borderRadius: 'inherit', overflow: 'hidden' }}>
-      {!isHashLoaded && (
-        <Skeleton className="absolute top-0 left-0 w-full h-full
-
-" style={{ borderRadius: 'inherit' }} />
-      )}
-      {!isLoaded && blurHash && (
-        <Blurhash
-          hash={blurHash} 
-          width="100%" 
-          height="100%" 
-          resolutionX={32} 
-          resolutionY={32} 
-          punch={1} 
-          style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover', borderRadius: 'inherit' }}
-        />
-      )}
-      <Image
-        src={src} 
-        alt={alt} 
-        width={width} 
-        height={height} 
-        onLoadingComplete={() => setIsLoaded(true)} 
-        onLoad={handleImageLoad}
-        style={{
-          position: 'absolute', 
-          top: 0, 
-          left: 0, 
-          width: '100%', 
-          height: '100%', 
-          objectFit: 'cover', 
-          visibility: isLoaded ? 'visible' : 'hidden', 
-          opacity: isLoaded ? 1 : 0, 
-          borderRadius: 'inherit'
-        }}
-        loading="lazy" 
-      />
     </div>
   );
 };
