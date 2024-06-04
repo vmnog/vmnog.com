@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import { Space_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/app/providers'
 import { WEBSITE_HOST_URL } from '@/lib/constants'
@@ -69,6 +70,7 @@ export default function RootLayout({
             </Container>
           </header>
           <main>
+            <Analytics />
             <Container>{children}</Container>
           </main>
           <footer className="py-16">
