@@ -8,25 +8,34 @@ import { Skeleton } from "./ui/skeleton";
 const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isHashLoaded, setIsHashLoaded] = useState(false);
+  const [showImage, setShowImage] = useState(false);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
     if (isHashLoaded) {
-      timer = setTimeout(() => {
-        setIsLoaded(true);
-      }, 500);
+      const timer = setTimeout(() => {
+        setShowImage(true);
+      }, 200);
+      return () => clearTimeout(timer);
     }
-    return () => clearTimeout(timer);
   }, [isHashLoaded]);
+
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => {
+        setIsHashLoaded(true);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded]);
 
   return (
     <div className="flex justify-center w-full mt-5">
-      <div style={{ position: 'relative', width, height, aspectRatio: `${width} / ${height}` }}>
+      <div style={{ position: 'relative', width: '100%', maxWidth: width, aspectRatio: `${width} / ${height}` }}>
         {!isHashLoaded && (
-          <Skeleton className="absolute top-0 left-0 w-full h-full" />
+          <Skeleton className="absolute inset-0 w-full h-full" />
         )}
 
-        {!isLoaded && blurHash && (
+        {!showImage && blurHash && (
           <Blurhash
             hash={blurHash}
             width="100%"
@@ -34,7 +43,7 @@ const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
             resolutionX={32}
             resolutionY={32}
             punch={1}
-            style={{ position: 'absolute', top: 0, left: 0, objectFit: 'cover' }}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
             onLoad={() => setIsHashLoaded(true)}
           />
         )}
@@ -42,18 +51,13 @@ const OptimizedImage = ({ src, alt, width, height, blurHash }) => {
         <Image
           src={src}
           alt={alt}
-          width={width}
-          height={height}
-          onLoadingComplete={() => setIsHashLoaded(true)}
+          layout="fill"
+          objectFit="cover"
+          onLoadingComplete={() => setIsLoaded(true)}
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            visibility: isLoaded ? 'visible' : 'hidden',
-            opacity: isLoaded ? 1 : 0,
+            visibility: showImage ? 'visible' : 'hidden',
+            opacity: showImage ? 1 : 0,
+            transition: 'opacity 0.5s ease-in-out',
           }}
         />
       </div>
